@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+:root{--ink:#1a1d24;--sub:#5a6270;--line:#e2e6ec;--bg:#f5f6f8;--card:#fff;
+--orange:#EE4C2C;--orange-bg:#FCEDE8;--blue:#2f6fb0;--blue-bg:#E8F1FA;
+--green:#1f9d6b;--green-bg:#E6F5EE;--red:#d23f3f;--red-bg:#FBEaea;
+--purple:#7b5cc4;--purple-bg:#F0EBFA;--amber:#b8860b;--amber-bg:#FBF3DE;}
+*{box-sizing:border-box;}
+html,body{height:100%;}
+body{margin:0;background:var(--bg);color:var(--ink);
+ font-family:'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif;line-height:1.5;overflow:auto;}
+.wrap{height:100vh;max-width:1320px;margin:0 auto;padding:10px 24px 10px;
+ display:flex;flex-direction:column;}
+h1{flex:none;margin:0 0 2px;font-size:20px;line-height:1.4;padding-left:14px;border-left:5px solid var(--orange);}
+.src{flex:none;color:var(--sub);font-size:13px;line-height:1.5;margin:0 0 8px;}
+.figure{flex:1;min-height:0;display:flex;flex-direction:column;
+ background:var(--card);border:1px solid var(--line);border-radius:14px;
+ padding:10px 18px 10px;}
+svg{flex:1 1 0;min-height:0;display:block;width:100%;height:0;max-width:100%;
+ margin:0 auto;background:#fff;border:1px solid var(--line);border-radius:10px;}
+.points{flex:none;margin:8px 0 0;padding:0;list-style:none;}
+.points li{position:relative;padding:2px 0 2px 24px;font-size:13px;line-height:1.45;color:#333a45;}
+.points li:before{content:"";position:absolute;left:4px;top:9px;width:8px;height:8px;
+ border-radius:50%;background:var(--orange);}
+text{font-family:'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif;}
+</style>
+</head>
+<body>
+<div class="wrap">
+<h1>无参数层三大家族</h1>
+<p class="src">对应教程：1 激活函数层 + 2 池化层 + 3 Dropout 层</p>
+<div class="figure">
+<svg viewBox="18.8 7.3 1221.2 628.2" role="img" aria-label="无参数层三大家族">
+<defs>
+<marker id="arrO" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#EE4C2C" stroke-width="1.8"/></marker>
+<marker id="arrB" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#2f6fb0" stroke-width="1.8"/></marker>
+<marker id="arrG" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#1f9d6b" stroke-width="1.8"/></marker>
+<marker id="arrP" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#7b5cc4" stroke-width="1.8"/></marker>
+<marker id="arrA" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#b8860b" stroke-width="1.8"/></marker>
+</defs>
+<text x="40" y="46" font-size="28" font-weight="700" fill="#1a1d24" text-anchor="start" dominant-baseline="central">无参数层三大家族：激活 / 池化 / Dropout</text>
+<text x="40" y="86" font-size="17" font-weight="400" fill="#5a6270" text-anchor="start" dominant-baseline="central">内部没有可训练参数，却决定了网络的非线性、降采样与正则化行为</text>
+<rect x="40" y="130" width="380" height="440" rx="14" fill="#FCEDE8" stroke="#EE4C2C" stroke-width="2.2"/>
+<text x="230" y="168" font-size="22" font-weight="700" fill="#8a4a38" text-anchor="middle" dominant-baseline="central">激活函数层</text>
+<text x="230" y="205" font-size="16" font-weight="700" fill="#8a4a38" text-anchor="middle" dominant-baseline="central">核心作用：引入非线性</text>
+<path d="M65 232 L395 232" stroke="#d7dce4" stroke-width="1.4" fill="none"/>
+<text x="230" y="268" font-size="15" font-weight="700" fill="#8a4a38" text-anchor="middle" dominant-baseline="central">代表成员</text>
+<text x="230" y="300" font-size="15" font-weight="400" fill="#333" text-anchor="middle" dominant-baseline="central">ReLU / GELU / SiLU</text>
+<text x="230" y="330" font-size="15" font-weight="400" fill="#333" text-anchor="middle" dominant-baseline="central">Sigmoid / Tanh / ELU</text>
+<text x="230" y="380" font-size="15" font-weight="700" fill="#8a4a38" text-anchor="middle" dominant-baseline="central">关键要点</text>
+<text x="230" y="415" font-size="15" font-weight="400" fill="#333" text-anchor="middle" dominant-baseline="central">没有它，多层网络等价于单层线性</text>
+<text x="230" y="475" font-size="14" font-weight="400" fill="#8a4a38" text-anchor="middle" dominant-baseline="central">无参数 · 可放入 Sequential</text>
+<rect x="440" y="130" width="380" height="440" rx="14" fill="#E8F1FA" stroke="#2f6fb0" stroke-width="2.2"/>
+<text x="630" y="168" font-size="22" font-weight="700" fill="#39618c" text-anchor="middle" dominant-baseline="central">池化层</text>
+<text x="630" y="205" font-size="16" font-weight="700" fill="#39618c" text-anchor="middle" dominant-baseline="central">核心作用：下采样 + 平移不变</text>
+<path d="M465 232 L795 232" stroke="#d7dce4" stroke-width="1.4" fill="none"/>
+<text x="630" y="268" font-size="15" font-weight="700" fill="#39618c" text-anchor="middle" dominant-baseline="central">代表成员</text>
+<text x="630" y="300" font-size="15" font-weight="400" fill="#333" text-anchor="middle" dominant-baseline="central">MaxPool2d / AvgPool2d</text>
+<text x="630" y="330" font-size="15" font-weight="400" fill="#333" text-anchor="middle" dominant-baseline="central">AdaptiveAvgPool2d</text>
+<text x="630" y="380" font-size="15" font-weight="700" fill="#39618c" text-anchor="middle" dominant-baseline="central">关键要点</text>
+<text x="630" y="415" font-size="15" font-weight="400" fill="#333" text-anchor="middle" dominant-baseline="central">全局池化可替代全连接层</text>
+<text x="630" y="475" font-size="14" font-weight="400" fill="#39618c" text-anchor="middle" dominant-baseline="central">无参数 · 可放入 Sequential</text>
+<rect x="840" y="130" width="380" height="440" rx="14" fill="#E6F5EE" stroke="#1f9d6b" stroke-width="2.2"/>
+<text x="1030" y="168" font-size="22" font-weight="700" fill="#0F6E56" text-anchor="middle" dominant-baseline="central">Dropout 层</text>
+<text x="1030" y="205" font-size="16" font-weight="700" fill="#0F6E56" text-anchor="middle" dominant-baseline="central">核心作用：正则化，抑制过拟合</text>
+<path d="M865 232 L1195 232" stroke="#d7dce4" stroke-width="1.4" fill="none"/>
+<text x="1030" y="268" font-size="15" font-weight="700" fill="#0F6E56" text-anchor="middle" dominant-baseline="central">代表成员</text>
+<text x="1030" y="300" font-size="15" font-weight="400" fill="#333" text-anchor="middle" dominant-baseline="central">Dropout / Dropout2d</text>
+<text x="1030" y="330" font-size="15" font-weight="400" fill="#333" text-anchor="middle" dominant-baseline="central">AlphaDropout</text>
+<text x="1030" y="380" font-size="15" font-weight="700" fill="#0F6E56" text-anchor="middle" dominant-baseline="central">关键要点</text>
+<text x="1030" y="415" font-size="15" font-weight="400" fill="#333" text-anchor="middle" dominant-baseline="central">train 时随机置零，eval 时关闭</text>
+<text x="1030" y="475" font-size="14" font-weight="400" fill="#0F6E56" text-anchor="middle" dominant-baseline="central">无参数 · 可放入 Sequential</text>
+<text x="40" y="605" font-size="16" font-weight="400" fill="#5a6270" text-anchor="start" dominant-baseline="central">注意：nn.PReLU 有可学习参数，属于有参数层；不在本家族内。</text>
+</svg>
+<ul class="points">
+    <li>激活函数层引入非线性，没有它，再深的网络也只是线性变换的堆叠。</li>
+    <li>池化层做下采样并带来平移不变性；AdaptiveAvgPool2d(1) 可做全局池化替代全连接。</li>
+    <li>Dropout 训练时随机置零、推理时关闭；须正确切换 model.train() / model.eval()。</li>
+</ul>
+</div>
+</div>
+</body>
+</html>

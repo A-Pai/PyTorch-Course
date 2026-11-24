@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>张量维度：从标量到三维</title>
+<style>
+:root{--ink:#1a1d24;--sub:#5a6270;--line:#e2e6ec;--bg:#f5f6f8;--card:#fff;
+--orange:#EE4C2C;--orange-bg:#FCEDE8;--blue:#2f6fb0;--blue-bg:#E8F1FA;
+--green:#1f9d6b;--green-bg:#E6F5EE;--red:#d23f3f;--red-bg:#FBEaea;}
+*{box-sizing:border-box;}
+html,body{height:100%;}
+body{margin:0;background:var(--bg);color:var(--ink);
+ font-family:'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif;line-height:1.5;overflow:auto;}
+.wrap{height:100vh;max-width:1320px;margin:0 auto;padding:10px 24px 10px;
+ display:flex;flex-direction:column;}
+h1{flex:none;margin:0 0 2px;font-size:20px;line-height:1.4;padding-left:14px;border-left:5px solid var(--orange);}
+.src{flex:none;color:var(--sub);font-size:13px;line-height:1.5;margin:0 0 8px;}
+.figure{flex:1;min-height:0;display:flex;flex-direction:column;
+ background:var(--card);border:1px solid var(--line);border-radius:14px;
+ padding:10px 18px 10px;}
+svg{flex:1 1 0;min-height:0;display:block;width:100%;height:0;max-width:100%;
+ margin:0 auto;background:#fff;border:1px solid var(--line);border-radius:10px;}
+.points{flex:none;margin:8px 0 0;padding:0;list-style:none;}
+.points li{position:relative;padding:2px 0 2px 24px;font-size:13px;line-height:1.45;color:#333a45;}
+.points li:before{content:"";position:absolute;left:4px;top:9px;width:8px;height:8px;
+ border-radius:50%;background:var(--orange);}
+.tag{display:inline-block;font-size:12px;padding:1px 9px;border-radius:6px;margin:0 3px;}
+.t-blue{background:var(--blue-bg);color:var(--blue);}
+.t-orange{background:var(--orange-bg);color:var(--orange);}
+.t-green{background:var(--green-bg);color:var(--green);}
+.t-red{background:var(--red-bg);color:var(--red);}
+text{font-family:'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif;}
+</style>
+</head>
+<body>
+<div class="wrap">
+<h1>张量维度：从标量到三维</h1>
+<p class="src">对应教程：2.1 张量维度定义 / 2.2 不同维度张量创建</p>
+<div class="figure">
+<svg viewBox="40.0 -0.7 1200.0 707.3" role="img" aria-label="张量维度可视化">
+    <text x="640" y="52" font-size="30" font-weight="600" fill="#1a1d24" text-anchor="middle">张量维度：从标量到三维</text>
+
+    <text x="160" y="112" font-size="30" font-weight="600" fill="#EE4C2C" text-anchor="middle">0D · 标量</text>
+    <text x="160" y="155" font-size="22" fill="#5a6270" text-anchor="middle">shape = ()</text>
+    <rect x="90" y="205" width="140" height="220" rx="12" fill="#FCEDE8" stroke="#EE4C2C" stroke-width="2.5"/>
+    <text x="160" y="315" font-size="72" font-weight="600" fill="#EE4C2C" text-anchor="middle" dominant-baseline="central">3.0</text>
+    <text x="160" y="480" font-size="22" fill="#5a6270" text-anchor="middle">单个数值</text>
+
+    <text x="480" y="112" font-size="30" font-weight="600" fill="#2f6fb0" text-anchor="middle">1D · 向量</text>
+    <text x="480" y="155" font-size="22" fill="#5a6270" text-anchor="middle">shape = (4,)</text>
+    <g fill="#E8F1FA" stroke="#2f6fb0" stroke-width="2">
+      <rect x="347" y="205" width="62" height="220" rx="8"/><rect x="415" y="205" width="62" height="220" rx="8"/>
+      <rect x="483" y="205" width="62" height="220" rx="8"/><rect x="551" y="205" width="62" height="220" rx="8"/>
+    </g>
+    <g font-size="48" font-weight="600" fill="#2f6fb0" text-anchor="middle" dominant-baseline="central">
+      <text x="378" y="315">1</text><text x="446" y="315">2</text><text x="514" y="315">3</text><text x="582" y="315">4</text>
+    </g>
+    <text x="480" y="480" font-size="22" fill="#5a6270" text-anchor="middle">一维数组 · 只有长度</text>
+
+    <text x="800" y="112" font-size="30" font-weight="600" fill="#2f6fb0" text-anchor="middle">2D · 矩阵</text>
+    <text x="800" y="155" font-size="22" fill="#5a6270" text-anchor="middle">shape = (2, 3)</text>
+    <g fill="#E8F1FA" stroke="#2f6fb0" stroke-width="2">
+      <rect x="678" y="205" width="76" height="100" rx="8"/><rect x="762" y="205" width="76" height="100" rx="8"/><rect x="846" y="205" width="76" height="100" rx="8"/>
+      <rect x="678" y="313" width="76" height="100" rx="8"/><rect x="762" y="313" width="76" height="100" rx="8"/><rect x="846" y="313" width="76" height="100" rx="8"/>
+    </g>
+    <g font-size="44" font-weight="600" fill="#2f6fb0" text-anchor="middle" dominant-baseline="central">
+      <text x="716" y="255">1</text><text x="800" y="255">2</text><text x="884" y="255">3</text>
+      <text x="716" y="363">4</text><text x="800" y="363">5</text><text x="884" y="363">6</text>
+    </g>
+    <text x="800" y="480" font-size="22" fill="#5a6270" text-anchor="middle">行 × 列</text>
+
+    <text x="1120" y="112" font-size="30" font-weight="600" fill="#7a52c7" text-anchor="middle">3D · 张量</text>
+    <text x="1120" y="155" font-size="22" fill="#5a6270" text-anchor="middle">shape = (2, 2, 3)</text>
+    <g fill="#EFE7FA" stroke="#7a52c7" stroke-width="2">
+      <rect x="1047" y="205" width="46" height="44" rx="5"/><rect x="1097" y="205" width="46" height="44" rx="5"/><rect x="1147" y="205" width="46" height="44" rx="5"/>
+      <rect x="1047" y="253" width="46" height="44" rx="5"/><rect x="1097" y="253" width="46" height="44" rx="5"/><rect x="1147" y="253" width="46" height="44" rx="5"/>
+    </g>
+    <g fill="#F7F3FD" stroke="#7a52c7" stroke-width="2" stroke-dasharray="5 4">
+      <rect x="1063" y="330" width="46" height="44" rx="5"/><rect x="1113" y="330" width="46" height="44" rx="5"/><rect x="1163" y="330" width="46" height="44" rx="5"/>
+      <rect x="1063" y="378" width="46" height="44" rx="5"/><rect x="1113" y="378" width="46" height="44" rx="5"/><rect x="1163" y="378" width="46" height="44" rx="5"/>
+    </g>
+    <text x="1120" y="480" font-size="22" fill="#5a6270" text-anchor="middle">2 层 (2×3) 堆叠</text>
+
+    <line x1="60" y1="545" x2="1220" y2="545" stroke="#e2e6ec" stroke-width="1.5"/>
+    <text x="640" y="615" font-size="26" fill="#333a45" text-anchor="middle" dominant-baseline="central">维度 = shape 的长度　|　元素总数 = 各维度相乘（numel）</text>
+    <text x="640" y="672" font-size="22" fill="#8a919c" text-anchor="middle" dominant-baseline="central">高维张量 = 低维张量的堆叠</text>
+</svg>
+<ul class="points">
+    <li><span class="tag t-blue">ndim</span> 维度数；<span class="tag t-orange">shape</span> 各轴长度；<span class="tag t-green">numel()</span> 元素总数。</li>
+    <li>高维张量本质是低维的<strong>堆叠</strong>：3D = 多个 2D 矩阵，2D = 多个 1D 向量。</li>
+  </ul>
+</div>
+</div>
+</body>
+</html>

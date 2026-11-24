@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>grad_fn 与 next_functions：计算图如何串联</title>
+<style>
+:root{--ink:#1a1d24;--sub:#5a6270;--line:#e2e6ec;--bg:#f5f6f8;--card:#fff;
+--orange:#EE4C2C;--orange-bg:#FCEDE8;--blue:#2f6fb0;--blue-bg:#E8F1FA;
+--green:#1f9d6b;--green-bg:#E6F5EE;--red:#d23f3f;--red-bg:#FBEaea;
+--purple:#7b5cc4;--purple-bg:#F0EBFA;--amber:#b8860b;--amber-bg:#FBF3DE;}
+*{box-sizing:border-box;}
+html,body{height:100%;}
+body{margin:0;background:var(--bg);color:var(--ink);
+ font-family:'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif;line-height:1.5;overflow:auto;}
+.wrap{height:100vh;max-width:1320px;margin:0 auto;padding:10px 24px 10px;
+ display:flex;flex-direction:column;}
+h1{flex:none;margin:0 0 2px;font-size:20px;line-height:1.4;padding-left:14px;border-left:5px solid var(--orange);}
+.src{flex:none;color:var(--sub);font-size:13px;line-height:1.5;margin:0 0 8px;}
+.figure{flex:1;min-height:0;display:flex;flex-direction:column;
+ background:var(--card);border:1px solid var(--line);border-radius:14px;
+ padding:10px 18px 10px;}
+svg{flex:1 1 0;min-height:0;display:block;width:100%;height:0;max-width:100%;
+ margin:0 auto;background:#fff;border:1px solid var(--line);border-radius:10px;}
+.points{flex:none;margin:8px 0 0;padding:0;list-style:none;}
+.points li{position:relative;padding:2px 0 2px 24px;font-size:13px;line-height:1.45;color:#333a45;}
+.points li:before{content:"";position:absolute;left:4px;top:9px;width:8px;height:8px;
+ border-radius:50%;background:var(--orange);}
+.tag{display:inline-block;font-size:12px;padding:1px 9px;border-radius:6px;margin:0 3px;}
+.t-blue{background:var(--blue-bg);color:var(--blue);}
+.t-orange{background:var(--orange-bg);color:var(--orange);}
+.t-green{background:var(--green-bg);color:var(--green);}
+.t-red{background:var(--red-bg);color:var(--red);}
+.t-purple{background:var(--purple-bg);color:var(--purple);}
+text{font-family:'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif;}
+</style>
+</head>
+<body>
+<div class="wrap">
+<h1>grad_fn 与 next_functions：计算图如何串联</h1>
+<p class="src">对应教程：二、计算图 / 2.3 图如何串联  +  2.4 动手观测</p>
+<div class="figure">
+<svg viewBox="18.8 -0.8 1241.2 710.8" role="img" aria-label="grad_fn 与 next_functions：计算图如何串联">
+<defs>
+<marker id="arrB" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#2f6fb0" stroke-width="1.8"/></marker>
+<marker id="arrO" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#EE4C2C" stroke-width="1.8"/></marker>
+<marker id="arrG" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#1f9d6b" stroke-width="1.8"/></marker>
+<marker id="arrP" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#7b5cc4" stroke-width="1.8"/></marker>
+</defs>
+<text x="40" y="52" font-size="30" font-weight="600" fill="#1a1d24" text-anchor="start">grad_fn 与 next_functions：把反向节点串成一张图</text>
+<text x="40" y="92" font-size="22" fill="#5a6270" text-anchor="start">前向：y = (x + w) × b 动态建图 → 反向：沿 next_functions 一路回溯</text>
+<text x="40" y="140" font-size="23" font-weight="600" fill="#2f6fb0" text-anchor="start" dominant-baseline="central">前向数据流（蓝色）</text>
+<rect x="50.0" y="170" width="180" height="76" rx="14" fill="#FCEDE8" stroke="#EE4C2C" stroke-width="2.2"/>
+<text x="140" y="193.0" font-size="24" font-weight="600" fill="#EE4C2C" text-anchor="middle" dominant-baseline="central">x 叶子</text>
+<text x="140" y="223.0" font-size="15" fill="#8a4a38" text-anchor="middle" dominant-baseline="central">requires_grad=True</text>
+<rect x="50.0" y="278" width="180" height="76" rx="14" fill="#FCEDE8" stroke="#EE4C2C" stroke-width="2.2"/>
+<text x="140" y="301.0" font-size="24" font-weight="600" fill="#EE4C2C" text-anchor="middle" dominant-baseline="central">w 叶子</text>
+<text x="140" y="331.0" font-size="18" fill="#8a4a38" text-anchor="middle" dominant-baseline="central">参数张量</text>
+<rect x="345.0" y="220" width="190" height="84" rx="14" fill="#E8F1FA" stroke="#2f6fb0" stroke-width="2.2"/>
+<text x="440" y="245.0" font-size="24" font-weight="600" fill="#2f6fb0" text-anchor="middle" dominant-baseline="central">s = x + w</text>
+<text x="440" y="279.0" font-size="18" fill="#39618c" text-anchor="middle" dominant-baseline="central">AddBackward0</text>
+<rect x="610.0" y="330" width="180" height="76" rx="14" fill="#FCEDE8" stroke="#EE4C2C" stroke-width="2.2"/>
+<text x="700" y="353.0" font-size="24" font-weight="600" fill="#EE4C2C" text-anchor="middle" dominant-baseline="central">b 叶子</text>
+<text x="700" y="383.0" font-size="18" fill="#8a4a38" text-anchor="middle" dominant-baseline="central">参数张量</text>
+<rect x="965.0" y="220" width="210" height="84" rx="14" fill="#E8F1FA" stroke="#2f6fb0" stroke-width="2.2"/>
+<text x="1070" y="245.0" font-size="26" font-weight="600" fill="#2f6fb0" text-anchor="middle" dominant-baseline="central">y = s × b</text>
+<text x="1070" y="279.0" font-size="18" fill="#39618c" text-anchor="middle" dominant-baseline="central">MulBackward0</text>
+<path d="M230 208L345 245" stroke="#2f6fb0" stroke-width="2.4" fill="none" marker-end="url(#arrB)"/>
+<path d="M230 316L345 280" stroke="#2f6fb0" stroke-width="2.4" fill="none" marker-end="url(#arrB)"/>
+<path d="M535 262L965 245" stroke="#2f6fb0" stroke-width="2.4" fill="none" marker-end="url(#arrB)"/>
+<path d="M790 350L980 300" stroke="#2f6fb0" stroke-width="2.4" fill="none" marker-end="url(#arrB)"/>
+<text x="40" y="455" font-size="23" font-weight="600" fill="#7b5cc4" text-anchor="start" dominant-baseline="central">反向节点链（紫色）：grad_fn 是入口，next_functions 指向上游</text>
+<rect x="290.0" y="480" width="700" height="84" rx="14" fill="#F0EBFA" stroke="#7b5cc4" stroke-width="2.2"/>
+<text x="640" y="505.0" font-size="26" font-weight="600" fill="#7b5cc4" text-anchor="middle" dominant-baseline="central">y.grad_fn → MulBackward0</text>
+<text x="640" y="539.0" font-size="18" fill="#5a4a8a" text-anchor="middle" dominant-baseline="central">“谁生了我”：由乘法节点产生</text>
+<rect x="50.0" y="600" width="620" height="90" rx="14" fill="#F0EBFA" stroke="#7b5cc4" stroke-width="2.2"/>
+<text x="360" y="626.5" font-size="22" font-weight="600" fill="#7b5cc4" text-anchor="middle" dominant-baseline="central">MulBackward0.next_functions</text>
+<text x="360" y="663.5" font-size="17" fill="#5a4a8a" text-anchor="middle" dominant-baseline="central">→ (AddBackward0, AccumulateGrad_b)</text>
+<rect x="680.0" y="600" width="560" height="90" rx="14" fill="#F0EBFA" stroke="#7b5cc4" stroke-width="2.2"/>
+<text x="960" y="626.5" font-size="21" font-weight="600" fill="#7b5cc4" text-anchor="middle" dominant-baseline="central">AddBackward0.next_functions</text>
+<text x="960" y="663.5" font-size="16" fill="#5a4a8a" text-anchor="middle" dominant-baseline="central">→ (AccumulateGrad_x, AccumulateGrad_w)</text>
+<path d="M500 564L380 600" stroke="#7b5cc4" stroke-width="2.4" fill="none" marker-end="url(#arrP)"/>
+<path d="M780 564L950 600" stroke="#7b5cc4" stroke-width="2.4" fill="none" marker-end="url(#arrP)"/>
+</svg>
+<ul class="points">
+    <li><span class="tag t-purple">grad_fn</span> 是张量进入反向图的“入口”，回答“我由哪个运算产生”。</li>
+    <li><span class="tag t-purple">next_functions</span> 属于反向节点，回答“我依赖谁”，递归展开即整张反向图。</li>
+    <li>叶子张量的 <strong>AccumulateGrad</strong> 是梯度汇总终点，把梯度写入 <code>.grad</code>。</li>
+</ul>
+</div>
+</div>
+</body>
+</html>

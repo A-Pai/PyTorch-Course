@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+:root{--ink:#1a1d24;--sub:#5a6270;--line:#e2e6ec;--bg:#f5f6f8;--card:#fff;
+--orange:#EE4C2C;--orange-bg:#FCEDE8;--blue:#2f6fb0;--blue-bg:#E8F1FA;
+--green:#1f9d6b;--green-bg:#E6F5EE;--red:#d23f3f;--red-bg:#FBEaea;
+--purple:#7b5cc4;--purple-bg:#F0EBFA;--amber:#b8860b;--amber-bg:#FBF3DE;}
+*{box-sizing:border-box;}
+html,body{height:100%;}
+body{margin:0;background:var(--bg);color:var(--ink);
+ font-family:'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif;line-height:1.5;overflow:auto;}
+.wrap{height:100vh;max-width:1320px;margin:0 auto;padding:10px 24px 10px;
+ display:flex;flex-direction:column;}
+h1{flex:none;margin:0 0 2px;font-size:20px;line-height:1.4;padding-left:14px;border-left:5px solid var(--orange);}
+.src{flex:none;color:var(--sub);font-size:13px;line-height:1.5;margin:0 0 8px;}
+.figure{flex:1;min-height:0;display:flex;flex-direction:column;
+ background:var(--card);border:1px solid var(--line);border-radius:14px;
+ padding:10px 18px 10px;}
+svg{flex:1 1 0;min-height:0;display:block;width:100%;height:0;max-width:100%;
+ margin:0 auto;background:#fff;border:1px solid var(--line);border-radius:10px;}
+.points{flex:none;margin:8px 0 0;padding:0;list-style:none;}
+.points li{position:relative;padding:2px 0 2px 24px;font-size:13px;line-height:1.45;color:#333a45;}
+.points li:before{content:"";position:absolute;left:4px;top:9px;width:8px;height:8px;
+ border-radius:50%;background:var(--orange);}
+text{font-family:'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif;}
+</style>
+</head>
+<body>
+<div class="wrap">
+<h1>五种容器全景</h1>
+<p class="src">对应教程：1 容器核心概念 + 4 使用场景与选择指南 —— 五种容器对比</p>
+<div class="figure">
+<svg viewBox="18.8 7.3 1241.2 578.2" role="img" aria-label="五种容器全景">
+<defs>
+<marker id="arrO" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#EE4C2C" stroke-width="1.8"/></marker>
+<marker id="arrB" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#2f6fb0" stroke-width="1.8"/></marker>
+<marker id="arrG" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#1f9d6b" stroke-width="1.8"/></marker>
+<marker id="arrP" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#7b5cc4" stroke-width="1.8"/></marker>
+<marker id="arrA" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#b8860b" stroke-width="1.8"/></marker>
+</defs>
+<text x="40" y="46" font-size="28" font-weight="700" fill="#1a1d24" text-anchor="start" dominant-baseline="central">五种容器：两个维度定位置</text>
+<text x="40" y="86" font-size="17" font-weight="400" fill="#5a6270" text-anchor="start" dominant-baseline="central">先分清装「层」还是装「参数」，再看按「顺序 / 列表 / 字典」哪种方式访问</text>
+<text x="40" y="118" font-size="18" font-weight="700" fill="#1a1d24" text-anchor="start" dominant-baseline="central">维度一：装什么 →   维度二：怎么访问</text>
+<rect x="40" y="150" width="780" height="60" rx="14" fill="#E8F1FA" stroke="#2f6fb0" stroke-width="1.8"/>
+<text x="430" y="180" font-size="19" font-weight="700" fill="#39618c" text-anchor="middle" dominant-baseline="central">装「网络层 / 模块」——有 forward，可直接 layer(x) 调用（Module 容器）</text>
+<rect x="40" y="220" width="250" height="300" rx="14" fill="#fff" stroke="#2f6fb0" stroke-width="2.0"/>
+<text x="165" y="252" font-size="19" font-weight="700" fill="#39618c" text-anchor="middle" dominant-baseline="central">nn.Sequential</text>
+<text x="165" y="290" font-size="15" font-weight="400" fill="#333" text-anchor="middle" dominant-baseline="central">顺序流水线</text>
+<text x="165" y="322" font-size="15" font-weight="400" fill="#39618c" text-anchor="middle" dominant-baseline="central">自带 forward</text>
+<text x="165" y="360" font-size="14" font-weight="400" fill="#333" text-anchor="middle" dominant-baseline="central">数据自动依次流过各层</text>
+<text x="165" y="410" font-size="16" font-weight="700" fill="#39618c" text-anchor="middle" dominant-baseline="central">省代码</text>
+<text x="165" y="448" font-size="14" font-weight="400" fill="#5a6270" text-anchor="middle" dominant-baseline="central">简单前馈网络</text>
+<rect x="300" y="220" width="250" height="300" rx="14" fill="#fff" stroke="#2f6fb0" stroke-width="2.0"/>
+<text x="425" y="252" font-size="19" font-weight="700" fill="#39618c" text-anchor="middle" dominant-baseline="central">nn.ModuleList</text>
+<text x="425" y="290" font-size="15" font-weight="400" fill="#333" text-anchor="middle" dominant-baseline="central">有序列表</text>
+<text x="425" y="322" font-size="15" font-weight="400" fill="#39618c" text-anchor="middle" dominant-baseline="central">无 forward</text>
+<text x="425" y="360" font-size="14" font-weight="400" fill="#333" text-anchor="middle" dominant-baseline="central">forward 内自己写循环</text>
+<text x="425" y="410" font-size="16" font-weight="700" fill="#39618c" text-anchor="middle" dominant-baseline="central">省管理</text>
+<text x="425" y="448" font-size="14" font-weight="400" fill="#5a6270" text-anchor="middle" dominant-baseline="central">动态循环网络</text>
+<rect x="560" y="220" width="260" height="300" rx="14" fill="#fff" stroke="#2f6fb0" stroke-width="2.0"/>
+<text x="690" y="252" font-size="19" font-weight="700" fill="#39618c" text-anchor="middle" dominant-baseline="central">nn.ModuleDict</text>
+<text x="690" y="290" font-size="15" font-weight="400" fill="#333" text-anchor="middle" dominant-baseline="central">字典（键→模块）</text>
+<text x="690" y="322" font-size="15" font-weight="400" fill="#39618c" text-anchor="middle" dominant-baseline="central">无 forward</text>
+<text x="690" y="360" font-size="14" font-weight="400" fill="#333" text-anchor="middle" dominant-baseline="central">按 key 取用分支</text>
+<text x="690" y="410" font-size="16" font-weight="700" fill="#39618c" text-anchor="middle" dominant-baseline="central">省脑子</text>
+<text x="690" y="448" font-size="14" font-weight="400" fill="#5a6270" text-anchor="middle" dominant-baseline="central">多分支 / 多任务</text>
+<rect x="840" y="150" width="400" height="60" rx="14" fill="#FCEDE8" stroke="#EE4C2C" stroke-width="1.8"/>
+<text x="1040" y="180" font-size="15" font-weight="700" fill="#8a4a38" text-anchor="middle" dominant-baseline="central">装「参数」：无 forward，需手动运算</text>
+<rect x="840" y="220" width="195" height="300" rx="14" fill="#fff" stroke="#EE4C2C" stroke-width="2.0"/>
+<text x="937" y="252" font-size="17" font-weight="700" fill="#8a4a38" text-anchor="middle" dominant-baseline="central">ParameterList</text>
+<text x="937" y="290" font-size="15" font-weight="400" fill="#333" text-anchor="middle" dominant-baseline="central">有序列表</text>
+<text x="937" y="322" font-size="15" font-weight="400" fill="#8a4a38" text-anchor="middle" dominant-baseline="central">无 forward</text>
+<text x="937" y="360" font-size="14" font-weight="400" fill="#333" text-anchor="middle" dominant-baseline="central">索引取用参数</text>
+<text x="937" y="410" font-size="14" font-weight="700" fill="#8a4a38" text-anchor="middle" dominant-baseline="central">让张量变可训练</text>
+<text x="937" y="448" font-size="13" font-weight="400" fill="#5a6270" text-anchor="middle" dominant-baseline="central">自定义参数运算</text>
+<rect x="1045" y="220" width="195" height="300" rx="14" fill="#fff" stroke="#EE4C2C" stroke-width="2.0"/>
+<text x="1142" y="252" font-size="17" font-weight="700" fill="#8a4a38" text-anchor="middle" dominant-baseline="central">ParameterDict</text>
+<text x="1142" y="290" font-size="15" font-weight="400" fill="#333" text-anchor="middle" dominant-baseline="central">字典（键→参数）</text>
+<text x="1142" y="322" font-size="15" font-weight="400" fill="#8a4a38" text-anchor="middle" dominant-baseline="central">无 forward</text>
+<text x="1142" y="360" font-size="14" font-weight="400" fill="#333" text-anchor="middle" dominant-baseline="central">按 key 取用参数</text>
+<text x="1142" y="410" font-size="14" font-weight="700" fill="#8a4a38" text-anchor="middle" dominant-baseline="central">参数有名字</text>
+<text x="1142" y="448" font-size="13" font-weight="400" fill="#5a6270" text-anchor="middle" dominant-baseline="central">加载预训练权重</text>
+<text x="40" y="555" font-size="16" font-weight="400" fill="#5a6270" text-anchor="start" dominant-baseline="central">一句话：Module 容器装「整机」（拿来能用），Parameter 容器装「零件」（自己组装运算）。</text>
+</svg>
+<ul class="points">
+    <li>先分<strong>装什么</strong>：装层用 Module 系（有 forward），装参数用 Parameter 系（无 forward）。</li>
+    <li>再看<strong>怎么访问</strong>：Sequential 顺序自动、ModuleList 列表、ModuleDict 字典按 key。</li>
+    <li>所有容器都自动注册、可迭代、随 .to(device) 迁移；用原生 list/dict 则不会注册参数。</li>
+</ul>
+</div>
+</div>
+</body>
+</html>

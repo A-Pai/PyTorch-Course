@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+:root{--ink:#1a1d24;--sub:#5a6270;--line:#e2e6ec;--bg:#f5f6f8;--card:#fff;
+--orange:#EE4C2C;--orange-bg:#FCEDE8;--blue:#2f6fb0;--blue-bg:#E8F1FA;
+--green:#1f9d6b;--green-bg:#E6F5EE;--red:#d23f3f;--red-bg:#FBEaea;
+--purple:#7b5cc4;--purple-bg:#F0EBFA;--amber:#b8860b;--amber-bg:#FBF3DE;}
+*{box-sizing:border-box;}
+html,body{height:100%;}
+body{margin:0;background:var(--bg);color:var(--ink);
+ font-family:'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif;line-height:1.5;overflow:auto;}
+.wrap{height:100vh;max-width:1320px;margin:0 auto;padding:10px 24px 10px;
+ display:flex;flex-direction:column;}
+h1{flex:none;margin:0 0 2px;font-size:20px;line-height:1.4;padding-left:14px;border-left:5px solid var(--orange);}
+.src{flex:none;color:var(--sub);font-size:13px;line-height:1.5;margin:0 0 8px;}
+.figure{flex:1;min-height:0;display:flex;flex-direction:column;
+ background:var(--card);border:1px solid var(--line);border-radius:14px;
+ padding:10px 18px 10px;}
+svg{flex:1 1 0;min-height:0;display:block;width:100%;height:0;max-width:100%;
+ margin:0 auto;background:#fff;border:1px solid var(--line);border-radius:10px;}
+.points{flex:none;margin:8px 0 0;padding:0;list-style:none;}
+.points li{position:relative;padding:2px 0 2px 24px;font-size:13px;line-height:1.45;color:#333a45;}
+.points li:before{content:"";position:absolute;left:4px;top:9px;width:8px;height:8px;
+ border-radius:50%;background:var(--orange);}
+text{font-family:'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif;}
+</style>
+</head>
+<body>
+<div class="wrap">
+<h1>权重持久化：范式与 pth 结构</h1>
+<p class="src">对应教程：一、底层基础 + 三、pth 文件拆解 + 九、三大交付方案</p>
+<div class="figure">
+<svg viewBox="18.8 7.9 1241.2 647.1" role="img" aria-label="权重持久化：范式与 pth 结构">
+<defs>
+<marker id="arrO" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#EE4C2C" stroke-width="1.8"/></marker>
+<marker id="arrB" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#2f6fb0" stroke-width="1.8"/></marker>
+<marker id="arrG" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#1f9d6b" stroke-width="1.8"/></marker>
+<marker id="arrP" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#7b5cc4" stroke-width="1.8"/></marker>
+<marker id="arrA" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#b8860b" stroke-width="1.8"/></marker>
+</defs>
+<text x="40" y="46" font-size="27" font-weight="700" fill="#1a1d24" text-anchor="start" dominant-baseline="central">权重持久化：两种范式、pth 结构与交付方案</text>
+<text x="40" y="86" font-size="17" font-weight="400" fill="#5a6270" text-anchor="start" dominant-baseline="central">torch.save 只是序列化工具，真正决定文件内容的是你传进去的对象</text>
+<rect x="40" y="120" width="580" height="185" rx="14" fill="#E6F5EE" stroke="#1f9d6b" stroke-width="2.2"/>
+<text x="330" y="152" font-size="21" font-weight="700" fill="#0F6E56" text-anchor="middle" dominant-baseline="central">保存 state_dict（生产推荐）</text>
+<text x="330" y="186" font-size="15" font-weight="400" fill="#333" text-anchor="middle" dominant-baseline="central">torch.save(model.state_dict(), 'w.pth')</text>
+<text x="70" y="220" font-size="14" font-weight="400" fill="#333" text-anchor="start" dominant-baseline="central">只存参数名→张量的静态映射，无网络结构、无执行代码</text>
+<text x="70" y="248" font-size="14" font-weight="400" fill="#333" text-anchor="start" dominant-baseline="central">体积小、跨版本兼容、weights_only=True 安全</text>
+<text x="70" y="276" font-size="14" font-weight="400" fill="#333" text-anchor="start" dominant-baseline="central">加载须先手写同构网络，再 load_state_dict 按名回填</text>
+<rect x="660" y="120" width="580" height="185" rx="14" fill="#FBEaea" stroke="#d23f3f" stroke-width="2.2"/>
+<text x="950" y="152" font-size="21" font-weight="700" fill="#d23f3f" text-anchor="middle" dominant-baseline="central">保存完整 model（生产禁用）</text>
+<text x="950" y="186" font-size="15" font-weight="400" fill="#333" text-anchor="middle" dominant-baseline="central">torch.save(model, 'm.pth')</text>
+<text x="690" y="220" font-size="14" font-weight="400" fill="#333" text-anchor="start" dominant-baseline="central">结构 _modules + 权重 + pickle 可执行重建代码</text>
+<text x="690" y="248" font-size="14" font-weight="400" fill="#333" text-anchor="start" dominant-baseline="central">pickle 有远程代码执行风险，2.6+ 默认拦截</text>
+<text x="690" y="276" font-size="14" font-weight="400" fill="#333" text-anchor="start" dominant-baseline="central">兼容性极差，仅本地单人临时调试可用</text>
+<rect x="40" y="330" width="1200" height="155" rx="14" fill="#fafbfc" stroke="#d7dce4" stroke-width="1.8"/>
+<text x="640" y="358" font-size="19" font-weight="700" fill="#1a1d24" text-anchor="middle" dominant-baseline="central">.pth / .pt 文件 = ZIP 压缩包</text>
+<text x="340" y="395" font-size="18" font-weight="700" fill="#39618c" text-anchor="start" dominant-baseline="central">data/</text>
+<text x="340" y="422" font-size="14" font-weight="400" fill="#333" text-anchor="start" dominant-baseline="central">纯二进制张量裸数据（无名称、无逻辑）</text>
+<text x="760" y="395" font-size="18" font-weight="700" fill="#8a4a38" text-anchor="start" dominant-baseline="central">data.pkl</text>
+<text x="760" y="422" font-size="14" font-weight="400" fill="#333" text-anchor="start" dominant-baseline="central">说明书：类型A 静态映射 / 类型B 可执行代码</text>
+<text x="640" y="462" font-size="15" font-weight="400" fill="#5a6270" text-anchor="start" dominant-baseline="central">state_dict 模式只写类型A；完整 model 模式会序列化 _modules 并写入类型B（危险）</text>
+<text x="40" y="505" font-size="18" font-weight="700" fill="#1a1d24" text-anchor="start" dominant-baseline="central">对外交付三方案</text>
+<rect x="40" y="525" width="380" height="110" rx="14" fill="#fff" stroke="#d7dce4" stroke-width="1.6"/>
+<text x="230" y="555" font-size="16" font-weight="700" fill="#8a4a38" text-anchor="middle" dominant-baseline="central">A · 单文件 weights.pth</text>
+<text x="230" y="585" font-size="14" font-weight="400" fill="#333" text-anchor="middle" dominant-baseline="central">无结构信息，需手写网络</text>
+<text x="230" y="610" font-size="13" font-weight="400" fill="#5a6270" text-anchor="middle" dominant-baseline="central">个人调试，不对外</text>
+<rect x="440" y="525" width="380" height="110" rx="14" fill="#fff" stroke="#d7dce4" stroke-width="1.6"/>
+<text x="630" y="555" font-size="16" font-weight="700" fill="#39618c" text-anchor="middle" dominant-baseline="central">B · weights.pth + model_arch.py</text>
+<text x="630" y="585" font-size="14" font-weight="400" fill="#333" text-anchor="middle" dominant-baseline="central">权重与结构分离交付</text>
+<text x="630" y="610" font-size="13" font-weight="400" fill="#5a6270" text-anchor="middle" dominant-baseline="central">团队内部、可二次微调</text>
+<rect x="840" y="525" width="380" height="110" rx="14" fill="#fff" stroke="#d7dce4" stroke-width="1.6"/>
+<text x="1030" y="555" font-size="16" font-weight="700" fill="#0F6E56" text-anchor="middle" dominant-baseline="central">C · config.json + model.safetensors</text>
+<text x="1030" y="585" font-size="14" font-weight="400" fill="#333" text-anchor="middle" dominant-baseline="central">无 pickle，配置内置结构</text>
+<text x="1030" y="610" font-size="13" font-weight="400" fill="#5a6270" text-anchor="middle" dominant-baseline="central">开源商用行业标准</text>
+</svg>
+<ul class="points">
+    <li>torch.save 传 <strong>state_dict</strong> 只存权重映射（安全、推荐）；传<strong>完整 model</strong> 会带入可执行代码（pickle 风险，禁用）。</li>
+    <li>.pth 是 ZIP 包：<strong>data/</strong> 存裸张量，<strong>data.pkl</strong> 存参数名到数据的映射说明书。</li>
+    <li>交付优先级：个人调试用 A，团队内部用 B，开源商用用 C（config + safetensors）。</li>
+</ul>
+</div>
+</div>
+</body>
+</html>

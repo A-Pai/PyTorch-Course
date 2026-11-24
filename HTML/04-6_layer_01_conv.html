@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+:root{--ink:#1a1d24;--sub:#5a6270;--line:#e2e6ec;--bg:#f5f6f8;--card:#fff;
+--orange:#EE4C2C;--orange-bg:#FCEDE8;--blue:#2f6fb0;--blue-bg:#E8F1FA;
+--green:#1f9d6b;--green-bg:#E6F5EE;--red:#d23f3f;--red-bg:#FBEaea;
+--purple:#7b5cc4;--purple-bg:#F0EBFA;--amber:#b8860b;--amber-bg:#FBF3DE;}
+*{box-sizing:border-box;}
+html,body{height:100%;}
+body{margin:0;background:var(--bg);color:var(--ink);
+ font-family:'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif;line-height:1.5;overflow:auto;}
+.wrap{height:100vh;max-width:1320px;margin:0 auto;padding:10px 24px 10px;
+ display:flex;flex-direction:column;}
+h1{flex:none;margin:0 0 2px;font-size:20px;line-height:1.4;padding-left:14px;border-left:5px solid var(--orange);}
+.src{flex:none;color:var(--sub);font-size:13px;line-height:1.5;margin:0 0 8px;}
+.figure{flex:1;min-height:0;display:flex;flex-direction:column;
+ background:var(--card);border:1px solid var(--line);border-radius:14px;
+ padding:10px 18px 10px;}
+svg{flex:1 1 0;min-height:0;display:block;width:100%;height:0;max-width:100%;
+ margin:0 auto;background:#fff;border:1px solid var(--line);border-radius:10px;}
+.points{flex:none;margin:8px 0 0;padding:0;list-style:none;}
+.points li{position:relative;padding:2px 0 2px 24px;font-size:13px;line-height:1.45;color:#333a45;}
+.points li:before{content:"";position:absolute;left:4px;top:9px;width:8px;height:8px;
+ border-radius:50%;background:var(--orange);}
+text{font-family:'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif;}
+</style>
+</head>
+<body>
+<div class="wrap">
+<h1>卷积家族对比</h1>
+<p class="src">对应教程：一、卷积层总述（Conv2d / 分组 / 逐深度 / 空洞 / 转置 / PixelShuffle）</p>
+<div class="figure">
+<svg viewBox="18.8 7.3 1221.2 632.7" role="img" aria-label="卷积家族对比">
+<defs>
+<marker id="arrO" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#EE4C2C" stroke-width="1.8"/></marker>
+<marker id="arrB" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#2f6fb0" stroke-width="1.8"/></marker>
+<marker id="arrG" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#1f9d6b" stroke-width="1.8"/></marker>
+<marker id="arrP" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#7b5cc4" stroke-width="1.8"/></marker>
+<marker id="arrA" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#b8860b" stroke-width="1.8"/></marker>
+</defs>
+<text x="40" y="46" font-size="28" font-weight="700" fill="#1a1d24" text-anchor="start" dominant-baseline="central">卷积家族：一张图看清各变体的作用</text>
+<text x="40" y="86" font-size="17" font-weight="400" fill="#5a6270" text-anchor="start" dominant-baseline="central">同为卷积，改的是「通道怎么连」或「空间怎么看」——抓住每个变体的核心差异</text>
+<rect x="40" y="150" width="380" height="220" rx="14" fill="#FCEDE8" stroke="#EE4C2C" stroke-width="2.2"/>
+<text x="230" y="188" font-size="21" font-weight="700" fill="#8a4a38" text-anchor="middle" dominant-baseline="central">标准 Conv2d</text>
+<path d="M65 212 L395 212" stroke="#d7dce4" stroke-width="1.4" fill="none"/>
+<text x="230" y="250" font-size="15" font-weight="700" fill="#8a4a38" text-anchor="middle" dominant-baseline="central">核心机制</text>
+<text x="230" y="282" font-size="15" font-weight="400" fill="#333" text-anchor="middle" dominant-baseline="central">每个输出通道看全部输入通道</text>
+<text x="230" y="325" font-size="15" font-weight="700" fill="#8a4a38" text-anchor="middle" dominant-baseline="central">典型用途</text>
+<text x="230" y="353" font-size="15" font-weight="400" fill="#333" text-anchor="middle" dominant-baseline="central">通用特征提取 / CNN 主干</text>
+<rect x="440" y="150" width="380" height="220" rx="14" fill="#E8F1FA" stroke="#2f6fb0" stroke-width="2.2"/>
+<text x="630" y="188" font-size="21" font-weight="700" fill="#39618c" text-anchor="middle" dominant-baseline="central">分组卷积 groups</text>
+<path d="M465 212 L795 212" stroke="#d7dce4" stroke-width="1.4" fill="none"/>
+<text x="630" y="250" font-size="15" font-weight="700" fill="#39618c" text-anchor="middle" dominant-baseline="central">核心机制</text>
+<text x="630" y="282" font-size="15" font-weight="400" fill="#333" text-anchor="middle" dominant-baseline="central">输入通道分组，组内独立卷积</text>
+<text x="630" y="325" font-size="15" font-weight="700" fill="#39618c" text-anchor="middle" dominant-baseline="central">典型用途</text>
+<text x="630" y="353" font-size="15" font-weight="400" fill="#333" text-anchor="middle" dominant-baseline="central">降参数量 / ResNeXt</text>
+<rect x="840" y="150" width="380" height="220" rx="14" fill="#E6F5EE" stroke="#1f9d6b" stroke-width="2.2"/>
+<text x="1030" y="188" font-size="21" font-weight="700" fill="#0F6E56" text-anchor="middle" dominant-baseline="central">逐深度卷积 depthwise</text>
+<path d="M865 212 L1195 212" stroke="#d7dce4" stroke-width="1.4" fill="none"/>
+<text x="1030" y="250" font-size="15" font-weight="700" fill="#0F6E56" text-anchor="middle" dominant-baseline="central">核心机制</text>
+<text x="1030" y="282" font-size="15" font-weight="400" fill="#333" text-anchor="middle" dominant-baseline="central">每组仅 1 通道，1 对 1 卷积</text>
+<text x="1030" y="325" font-size="15" font-weight="700" fill="#0F6E56" text-anchor="middle" dominant-baseline="central">典型用途</text>
+<text x="1030" y="353" font-size="15" font-weight="400" fill="#333" text-anchor="middle" dominant-baseline="central">极轻量 / MobileNet</text>
+<rect x="40" y="400" width="380" height="220" rx="14" fill="#E8F1FA" stroke="#2f6fb0" stroke-width="2.2"/>
+<text x="230" y="438" font-size="21" font-weight="700" fill="#39618c" text-anchor="middle" dominant-baseline="central">空洞卷积 dilated</text>
+<path d="M65 462 L395 462" stroke="#d7dce4" stroke-width="1.4" fill="none"/>
+<text x="230" y="500" font-size="15" font-weight="700" fill="#39618c" text-anchor="middle" dominant-baseline="central">核心机制</text>
+<text x="230" y="532" font-size="15" font-weight="400" fill="#333" text-anchor="middle" dominant-baseline="central">卷积核插空格，扩大感受野</text>
+<text x="230" y="575" font-size="15" font-weight="700" fill="#39618c" text-anchor="middle" dominant-baseline="central">典型用途</text>
+<text x="230" y="603" font-size="15" font-weight="400" fill="#333" text-anchor="middle" dominant-baseline="central">稠密预测 / 语义分割</text>
+<rect x="440" y="400" width="380" height="220" rx="14" fill="#FCEDE8" stroke="#EE4C2C" stroke-width="2.2"/>
+<text x="630" y="438" font-size="21" font-weight="700" fill="#8a4a38" text-anchor="middle" dominant-baseline="central">转置卷积 transposed</text>
+<path d="M465 462 L795 462" stroke="#d7dce4" stroke-width="1.4" fill="none"/>
+<text x="630" y="500" font-size="15" font-weight="700" fill="#8a4a38" text-anchor="middle" dominant-baseline="central">核心机制</text>
+<text x="630" y="532" font-size="15" font-weight="400" fill="#333" text-anchor="middle" dominant-baseline="central">小特征图 → 大特征图，可学习上采样</text>
+<text x="630" y="575" font-size="15" font-weight="700" fill="#8a4a38" text-anchor="middle" dominant-baseline="central">典型用途</text>
+<text x="630" y="603" font-size="15" font-weight="400" fill="#333" text-anchor="middle" dominant-baseline="central">解码器 / 图像生成</text>
+<rect x="840" y="400" width="380" height="220" rx="14" fill="#E6F5EE" stroke="#1f9d6b" stroke-width="2.2"/>
+<text x="1030" y="438" font-size="21" font-weight="700" fill="#0F6E56" text-anchor="middle" dominant-baseline="central">PixelShuffle 亚像素</text>
+<path d="M865 462 L1195 462" stroke="#d7dce4" stroke-width="1.4" fill="none"/>
+<text x="1030" y="500" font-size="15" font-weight="700" fill="#0F6E56" text-anchor="middle" dominant-baseline="central">核心机制</text>
+<text x="1030" y="532" font-size="15" font-weight="400" fill="#333" text-anchor="middle" dominant-baseline="central">通道重排成空间，分辨率提升 r 倍</text>
+<text x="1030" y="575" font-size="15" font-weight="700" fill="#0F6E56" text-anchor="middle" dominant-baseline="central">典型用途</text>
+<text x="1030" y="603" font-size="15" font-weight="400" fill="#333" text-anchor="middle" dominant-baseline="central">超分 / 上采样</text>
+</svg>
+<ul class="points">
+    <li><strong>分组 / 逐深度卷积</strong>改的是「通道连接」：分组降低参数量，逐深度做到极致轻量。</li>
+    <li><strong>空洞卷积</strong>在卷积核里插空格，不增参数就扩大感受野，常用于语义分割。</li>
+    <li><strong>转置卷积</strong>与 <strong>PixelShuffle</strong>都做上采样：前者可学习，后者无参数、靠通道重排。</li>
+</ul>
+</div>
+</div>
+</body>
+</html>

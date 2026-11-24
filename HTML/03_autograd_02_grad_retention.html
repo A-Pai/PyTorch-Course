@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>梯度最终留在谁身上？</title>
+<style>
+:root{--ink:#1a1d24;--sub:#5a6270;--line:#e2e6ec;--bg:#f5f6f8;--card:#fff;
+--orange:#EE4C2C;--orange-bg:#FCEDE8;--blue:#2f6fb0;--blue-bg:#E8F1FA;
+--green:#1f9d6b;--green-bg:#E6F5EE;--red:#d23f3f;--red-bg:#FBEaea;
+--purple:#7b5cc4;--purple-bg:#F0EBFA;--amber:#b8860b;--amber-bg:#FBF3DE;}
+*{box-sizing:border-box;}
+html,body{height:100%;}
+body{margin:0;background:var(--bg);color:var(--ink);
+ font-family:'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif;line-height:1.5;overflow:auto;}
+.wrap{height:100vh;max-width:1320px;margin:0 auto;padding:10px 24px 10px;
+ display:flex;flex-direction:column;}
+h1{flex:none;margin:0 0 2px;font-size:20px;line-height:1.4;padding-left:14px;border-left:5px solid var(--orange);}
+.src{flex:none;color:var(--sub);font-size:13px;line-height:1.5;margin:0 0 8px;}
+.figure{flex:1;min-height:0;display:flex;flex-direction:column;
+ background:var(--card);border:1px solid var(--line);border-radius:14px;
+ padding:10px 18px 10px;}
+svg{flex:1 1 0;min-height:0;display:block;width:100%;height:0;max-width:100%;
+ margin:0 auto;background:#fff;border:1px solid var(--line);border-radius:10px;}
+.points{flex:none;margin:8px 0 0;padding:0;list-style:none;}
+.points li{position:relative;padding:2px 0 2px 24px;font-size:13px;line-height:1.45;color:#333a45;}
+.points li:before{content:"";position:absolute;left:4px;top:9px;width:8px;height:8px;
+ border-radius:50%;background:var(--orange);}
+.tag{display:inline-block;font-size:12px;padding:1px 9px;border-radius:6px;margin:0 3px;}
+.t-blue{background:var(--blue-bg);color:var(--blue);}
+.t-orange{background:var(--orange-bg);color:var(--orange);}
+.t-green{background:var(--green-bg);color:var(--green);}
+.t-red{background:var(--red-bg);color:var(--red);}
+.t-purple{background:var(--purple-bg);color:var(--purple);}
+text{font-family:'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif;}
+</style>
+</head>
+<body>
+<div class="wrap">
+<h1>梯度最终留在谁身上？</h1>
+<p class="src">对应教程：三、操控 autograd / 3.2 叶子 vs 中间张量</p>
+<div class="figure">
+<svg viewBox="18.8 -0.8 1131.2 709.8" role="img" aria-label="梯度最终留在谁身上？">
+<defs>
+<marker id="arrB" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#2f6fb0" stroke-width="1.8"/></marker>
+<marker id="arrO" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#EE4C2C" stroke-width="1.8"/></marker>
+<marker id="arrG" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#1f9d6b" stroke-width="1.8"/></marker>
+<marker id="arrP" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#7b5cc4" stroke-width="1.8"/></marker>
+</defs>
+<text x="40" y="52" font-size="30" font-weight="600" fill="#1a1d24" text-anchor="start">梯度最终留在谁身上？</text>
+<text x="40" y="92" font-size="22" fill="#5a6270" text-anchor="start">参数叶子永久保留 .grad，中间张量的梯度用完即弃</text>
+<text x="40" y="145" font-size="23" font-weight="600" fill="#2f6fb0" text-anchor="start" dominant-baseline="central">前向计算链</text>
+<rect x="45.0" y="175" width="150" height="72" rx="14" fill="#F1EFE8" stroke="#888780" stroke-width="2.2"/>
+<text x="120" y="197.0" font-size="24" font-weight="600" fill="#5a6270" text-anchor="middle" dominant-baseline="central">输入 x</text>
+<text x="120" y="225.0" font-size="18" fill="#888780" text-anchor="middle" dominant-baseline="central">非参数</text>
+<rect x="310.0" y="175" width="180" height="72" rx="14" fill="#E8F1FA" stroke="#2f6fb0" stroke-width="2.2"/>
+<text x="400" y="197.0" font-size="24" font-weight="600" fill="#2f6fb0" text-anchor="middle" dominant-baseline="central">h = x @ w1</text>
+<text x="400" y="225.0" font-size="18" fill="#39618c" text-anchor="middle" dominant-baseline="central">中间激活张量</text>
+<rect x="620.0" y="175" width="160" height="72" rx="14" fill="#E8F1FA" stroke="#2f6fb0" stroke-width="2.2"/>
+<text x="700" y="197.0" font-size="22" font-weight="600" fill="#2f6fb0" text-anchor="middle" dominant-baseline="central">a = relu(h)</text>
+<text x="700" y="225.0" font-size="18" fill="#39618c" text-anchor="middle" dominant-baseline="central">中间激活</text>
+<rect x="950.0" y="175" width="180" height="72" rx="14" fill="#FCEDE8" stroke="#EE4C2C" stroke-width="2.2"/>
+<text x="1040" y="197.0" font-size="24" font-weight="600" fill="#EE4C2C" text-anchor="middle" dominant-baseline="central">loss</text>
+<text x="1040" y="225.0" font-size="18" fill="#8a4a38" text-anchor="middle" dominant-baseline="central">标量输出</text>
+<path d="M195 211L310 211" stroke="#2f6fb0" stroke-width="2.4" fill="none" marker-end="url(#arrB)"/>
+<path d="M490 211L620 211" stroke="#2f6fb0" stroke-width="2.4" fill="none" marker-end="url(#arrB)"/>
+<path d="M780 211L950 211" stroke="#2f6fb0" stroke-width="2.4" fill="none" marker-end="url(#arrB)"/>
+<rect x="310.0" y="300" width="180" height="66" rx="14" fill="#FCEDE8" stroke="#EE4C2C" stroke-width="2.2"/>
+<text x="400" y="333.0" font-size="22" font-weight="600" fill="#EE4C2C" text-anchor="middle" dominant-baseline="central">w1（参数叶子）</text>
+<rect x="620.0" y="300" width="160" height="66" rx="14" fill="#FCEDE8" stroke="#EE4C2C" stroke-width="2.2"/>
+<text x="700" y="333.0" font-size="20" font-weight="600" fill="#EE4C2C" text-anchor="middle" dominant-baseline="central">w2（参数叶子）</text>
+<path d="M400 300L400 250" stroke="#EE4C2C" stroke-width="2.4" fill="none" marker-end="url(#arrO)"/>
+<path d="M780 300L780 250" stroke="#EE4C2C" stroke-width="2.4" fill="none" marker-end="url(#arrO)"/>
+<text x="40" y="425" font-size="23" font-weight="600" fill="#1f9d6b" text-anchor="start" dominant-baseline="central">反向传播时各张量梯度的去向</text>
+<rect x="40.0" y="460" width="400" height="100" rx="14" fill="#E6F5EE" stroke="#1f9d6b" stroke-width="2.2"/>
+<text x="240" y="489.0" font-size="25" font-weight="600" fill="#1f9d6b" text-anchor="middle" dominant-baseline="central">w1.grad / w2.grad  ✅ 永久保留</text>
+<text x="240" y="531.0" font-size="19" fill="#0F6E56" text-anchor="middle" dominant-baseline="central">写入 .grad，供优化器更新权重</text>
+<rect x="540.0" y="460" width="440" height="100" rx="14" fill="#F1EFE8" stroke="#888780" stroke-width="2.2"/>
+<text x="760" y="489.0" font-size="25" font-weight="600" fill="#888780" text-anchor="middle" dominant-baseline="central">h.grad / a.grad  ❌ 默认丢弃</text>
+<text x="760" y="531.0" font-size="18" fill="#5F5E5A" text-anchor="middle" dominant-baseline="central">只用于向上游传递，传完即用完即弃（None）</text>
+<path d="M1040 250L1040 430" stroke="#EE4C2C" stroke-width="2.4" fill="none" marker-end="url(#arrO)"/>
+<text x="1040" y="405" font-size="18" fill="#EE4C2C" text-anchor="middle" dominant-baseline="central">梯度反向流动</text>
+<rect x="330.0" y="605" width="620" height="84" rx="14" fill="#F0EBFA" stroke="#7b5cc4" stroke-width="2.2"/>
+<text x="640" y="630.0" font-size="23" font-weight="600" fill="#7b5cc4" text-anchor="middle" dominant-baseline="central">如需保留中间梯度：调用 h.retain_grad()</text>
+<text x="640" y="664.0" font-size="18" fill="#5a4a8a" text-anchor="middle" dominant-baseline="central">调试 / 可视化用，正式训练会增加显存占用，慎用</text>
+</svg>
+<ul class="points">
+    <li><span class="tag t-green">参数叶子</span> 的梯度写入 <code>.grad</code> 永久保留，供 SGD / Adam 读取更新权重。</li>
+    <li><span class="tag t-orange">中间张量</span> 的梯度只用于向上游传递，默认用完即弃，<code>h.grad</code> 为 None。</li>
+    <li>调试时可用 <code>h.retain_grad()</code> 强制保留，但会增加显存占用。</li>
+</ul>
+</div>
+</div>
+</body>
+</html>

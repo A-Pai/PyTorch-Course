@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+:root{--ink:#1a1d24;--sub:#5a6270;--line:#e2e6ec;--bg:#f5f6f8;--card:#fff;
+--orange:#EE4C2C;--orange-bg:#FCEDE8;--blue:#2f6fb0;--blue-bg:#E8F1FA;
+--green:#1f9d6b;--green-bg:#E6F5EE;--red:#d23f3f;--red-bg:#FBEaea;
+--purple:#7b5cc4;--purple-bg:#F0EBFA;--amber:#b8860b;--amber-bg:#FBF3DE;}
+*{box-sizing:border-box;}
+html,body{height:100%;}
+body{margin:0;background:var(--bg);color:var(--ink);
+ font-family:'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif;line-height:1.5;overflow:auto;}
+.wrap{height:100vh;max-width:1320px;margin:0 auto;padding:10px 24px 10px;
+ display:flex;flex-direction:column;}
+h1{flex:none;margin:0 0 2px;font-size:20px;line-height:1.4;padding-left:14px;border-left:5px solid var(--orange);}
+.src{flex:none;color:var(--sub);font-size:13px;line-height:1.5;margin:0 0 8px;}
+.figure{flex:1;min-height:0;display:flex;flex-direction:column;
+ background:var(--card);border:1px solid var(--line);border-radius:14px;
+ padding:10px 18px 10px;}
+svg{flex:1 1 0;min-height:0;display:block;width:100%;height:0;max-width:100%;
+ margin:0 auto;background:#fff;border:1px solid var(--line);border-radius:10px;}
+.points{flex:none;margin:8px 0 0;padding:0;list-style:none;}
+.points li{position:relative;padding:2px 0 2px 24px;font-size:13px;line-height:1.45;color:#333a45;}
+.points li:before{content:"";position:absolute;left:4px;top:9px;width:8px;height:8px;
+ border-radius:50%;background:var(--orange);}
+text{font-family:'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif;}
+</style>
+</head>
+<body>
+<div class="wrap">
+<h1>状态存哪里：三形态与三容器</h1>
+<p class="src">对应教程：5 有状态 vs 无状态 + 6 存储原理 + Parameter vs Buffer</p>
+<div class="figure">
+<svg viewBox="18.8 7.3 1241.2 677.7" role="img" aria-label="状态存哪里：三形态与三容器">
+<defs>
+<marker id="arrO" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#EE4C2C" stroke-width="1.8"/></marker>
+<marker id="arrB" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#2f6fb0" stroke-width="1.8"/></marker>
+<marker id="arrG" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#1f9d6b" stroke-width="1.8"/></marker>
+<marker id="arrP" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#7b5cc4" stroke-width="1.8"/></marker>
+<marker id="arrA" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#b8860b" stroke-width="1.8"/></marker>
+</defs>
+<text x="40" y="46" font-size="28" font-weight="700" fill="#1a1d24" text-anchor="start" dominant-baseline="central">状态存哪里？三种形态与三个私有容器</text>
+<text x="40" y="86" font-size="17" font-weight="400" fill="#5a6270" text-anchor="start" dominant-baseline="central">「状态」＝可训练参数 + 运行时标记 + 统计缓存，nn.Module 用三张台账分类保管</text>
+<text x="40" y="118" font-size="18" font-weight="700" fill="#1a1d24" text-anchor="start" dominant-baseline="central">网络层的三种形态（能否放进 Sequential 的关键）</text>
+<rect x="40" y="140" width="380" height="150" rx="14" fill="#FCEDE8" stroke="#EE4C2C" stroke-width="2.2"/>
+<text x="230" y="172" font-size="21" font-weight="700" fill="#8a4a38" text-anchor="middle" dominant-baseline="central">有状态层</text>
+<text x="230" y="205" font-size="16" font-weight="400" fill="#8a4a38" text-anchor="middle" dominant-baseline="central">nn.Linear / Conv2d</text>
+<text x="230" y="235" font-size="15" font-weight="400" fill="#333" text-anchor="middle" dominant-baseline="central">有可训练参数</text>
+<text x="230" y="266" font-size="15" font-weight="400" fill="#8a4a38" text-anchor="middle" dominant-baseline="central">可放入 Sequential ✅</text>
+<rect x="440" y="140" width="380" height="150" rx="14" fill="#E8F1FA" stroke="#2f6fb0" stroke-width="2.2"/>
+<text x="630" y="172" font-size="21" font-weight="700" fill="#39618c" text-anchor="middle" dominant-baseline="central">无参数层</text>
+<text x="630" y="205" font-size="16" font-weight="400" fill="#39618c" text-anchor="middle" dominant-baseline="central">nn.ReLU / Dropout</text>
+<text x="630" y="235" font-size="15" font-weight="400" fill="#333" text-anchor="middle" dominant-baseline="central">无参数但有 train/eval 模式</text>
+<text x="630" y="266" font-size="15" font-weight="400" fill="#39618c" text-anchor="middle" dominant-baseline="central">可放入 Sequential ✅</text>
+<rect x="840" y="140" width="380" height="150" rx="14" fill="#E6F5EE" stroke="#1f9d6b" stroke-width="2.2"/>
+<text x="1030" y="172" font-size="21" font-weight="700" fill="#0F6E56" text-anchor="middle" dominant-baseline="central">无状态函数</text>
+<text x="1030" y="205" font-size="16" font-weight="400" fill="#0F6E56" text-anchor="middle" dominant-baseline="central">F.relu / F.conv2d</text>
+<text x="1030" y="235" font-size="15" font-weight="400" fill="#333" text-anchor="middle" dominant-baseline="central">纯函数，无参数无状态</text>
+<text x="1030" y="266" font-size="15" font-weight="400" fill="#0F6E56" text-anchor="middle" dominant-baseline="central">不可放入 Sequential ❌</text>
+<text x="40" y="320" font-size="18" font-weight="700" fill="#1a1d24" text-anchor="start" dominant-baseline="central">三个私有容器：不同类型的状态存进不同的台账</text>
+<rect x="40" y="345" width="380" height="120" rx="14" fill="#FCEDE8" stroke="#EE4C2C" stroke-width="2.2"/>
+<text x="230" y="377" font-size="21" font-weight="700" fill="#8a4a38" text-anchor="middle" dominant-baseline="central">_parameters</text>
+<text x="230" y="410" font-size="15" font-weight="400" fill="#333" text-anchor="middle" dominant-baseline="central">可训练参数 weight / bias</text>
+<text x="230" y="438" font-size="14" font-weight="400" fill="#8a4a38" text-anchor="middle" dominant-baseline="central">有梯度，优化器更新</text>
+<rect x="440" y="345" width="380" height="120" rx="14" fill="#E8F1FA" stroke="#2f6fb0" stroke-width="2.2"/>
+<text x="630" y="377" font-size="21" font-weight="700" fill="#39618c" text-anchor="middle" dominant-baseline="central">_modules</text>
+<text x="630" y="410" font-size="15" font-weight="400" fill="#333" text-anchor="middle" dominant-baseline="central">子模块（层 / 容器）</text>
+<text x="630" y="438" font-size="14" font-weight="400" fill="#39618c" text-anchor="middle" dominant-baseline="central">递归嵌套，构成网络树</text>
+<rect x="840" y="345" width="380" height="120" rx="14" fill="#E6F5EE" stroke="#1f9d6b" stroke-width="2.2"/>
+<text x="1030" y="377" font-size="21" font-weight="700" fill="#0F6E56" text-anchor="middle" dominant-baseline="central">_buffers</text>
+<text x="1030" y="410" font-size="15" font-weight="400" fill="#333" text-anchor="middle" dominant-baseline="central">缓存张量 BN running_mean</text>
+<text x="1030" y="438" font-size="14" font-weight="400" fill="#0F6E56" text-anchor="middle" dominant-baseline="central">无梯度，但会持久化</text>
+<text x="40" y="490" font-size="18" font-weight="700" fill="#1a1d24" text-anchor="start" dominant-baseline="central">关键区分：Parameter vs Buffer</text>
+<rect x="40" y="515" width="590" height="150" rx="14" fill="#F0EBFA" stroke="#7b5cc4" stroke-width="2.2"/>
+<text x="335" y="545" font-size="20" font-weight="700" fill="#7b5cc4" text-anchor="middle" dominant-baseline="central">Parameter（参数）</text>
+<text x="70" y="578" font-size="15" font-weight="400" fill="#333" text-anchor="start" dominant-baseline="central">✅ 有梯度，会被优化器更新</text>
+<text x="70" y="606" font-size="15" font-weight="400" fill="#333" text-anchor="start" dominant-baseline="central">✅ 存入 _parameters 台账</text>
+<text x="70" y="634" font-size="15" font-weight="400" fill="#333" text-anchor="start" dominant-baseline="central">典型：权重 weight、偏置 bias</text>
+<rect x="650" y="515" width="590" height="150" rx="14" fill="#FBF3DE" stroke="#b8860b" stroke-width="2.2"/>
+<text x="945" y="545" font-size="20" font-weight="700" fill="#8a6d1f" text-anchor="middle" dominant-baseline="central">Buffer（缓存）</text>
+<text x="680" y="578" font-size="15" font-weight="400" fill="#333" text-anchor="start" dominant-baseline="central">❌ 无梯度，不被优化器更新</text>
+<text x="680" y="606" font-size="15" font-weight="400" fill="#333" text-anchor="start" dominant-baseline="central">✅ 但仍存入 state_dict 持久化</text>
+<text x="680" y="634" font-size="15" font-weight="400" fill="#333" text-anchor="start" dominant-baseline="central">典型：BN 的 running_mean / var</text>
+</svg>
+<ul class="points">
+    <li>「有状态」不等于「有参数」：Dropout 无参数，但有 train/eval 模式，仍是 nn.Module。</li>
+    <li>三个私有容器分工：_parameters 存可训练参数、_modules 存子模块、_buffers 存统计缓存。</li>
+    <li>Parameter 有梯度会被更新；Buffer 无梯度，但同样进 state_dict，用于保存 BN 统计量。</li>
+</ul>
+</div>
+</div>
+</body>
+</html>

@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>解密 autograd 引擎</title>
+<style>
+:root{--ink:#1a1d24;--sub:#5a6270;--line:#e2e6ec;--bg:#f5f6f8;--card:#fff;
+--orange:#EE4C2C;--orange-bg:#FCEDE8;--blue:#2f6fb0;--blue-bg:#E8F1FA;
+--green:#1f9d6b;--green-bg:#E6F5EE;--red:#d23f3f;--red-bg:#FBEaea;
+--purple:#7b5cc4;--purple-bg:#F0EBFA;--amber:#b8860b;--amber-bg:#FBF3DE;}
+*{box-sizing:border-box;}
+html,body{height:100%;}
+body{margin:0;background:var(--bg);color:var(--ink);
+ font-family:'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif;line-height:1.5;overflow:auto;}
+.wrap{height:100vh;max-width:1320px;margin:0 auto;padding:10px 24px 10px;
+ display:flex;flex-direction:column;}
+h1{flex:none;margin:0 0 2px;font-size:20px;line-height:1.4;padding-left:14px;border-left:5px solid var(--orange);}
+.src{flex:none;color:var(--sub);font-size:13px;line-height:1.5;margin:0 0 8px;}
+.figure{flex:1;min-height:0;display:flex;flex-direction:column;
+ background:var(--card);border:1px solid var(--line);border-radius:14px;
+ padding:10px 18px 10px;}
+svg{flex:1 1 0;min-height:0;display:block;width:100%;height:0;max-width:100%;
+ margin:0 auto;background:#fff;border:1px solid var(--line);border-radius:10px;}
+.points{flex:none;margin:8px 0 0;padding:0;list-style:none;}
+.points li{position:relative;padding:2px 0 2px 24px;font-size:13px;line-height:1.45;color:#333a45;}
+.points li:before{content:"";position:absolute;left:4px;top:9px;width:8px;height:8px;
+ border-radius:50%;background:var(--orange);}
+.tag{display:inline-block;font-size:12px;padding:1px 9px;border-radius:6px;margin:0 3px;}
+.t-blue{background:var(--blue-bg);color:var(--blue);}
+.t-orange{background:var(--orange-bg);color:var(--orange);}
+.t-green{background:var(--green-bg);color:var(--green);}
+.t-red{background:var(--red-bg);color:var(--red);}
+.t-purple{background:var(--purple-bg);color:var(--purple);}
+text{font-family:'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif;}
+</style>
+</head>
+<body>
+<div class="wrap">
+<h1>解密 autograd 引擎：其实是两套代码、两个时刻</h1>
+<p class="src">对应教程：四、反向传播的遍历机制（收束小节）—— 属性是账本，引擎是记账与查账的动作</p>
+<div class="figure">
+<svg viewBox="18.8 -2.8 1231.2 708.8" role="img" aria-label="autograd 引擎解密：前向留痕与反向调度">
+<defs>
+<marker id="arrO" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#EE4C2C" stroke-width="1.8"/></marker>
+<marker id="arrB" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#2f6fb0" stroke-width="1.8"/></marker>
+<marker id="arrP" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#7b5cc4" stroke-width="1.8"/></marker>
+</defs>
+<text x="40" y="50" font-size="30" font-weight="600" fill="#1a1d24" text-anchor="start">解密“引擎”：没有一个神秘对象，只有两套代码</text>
+<text x="40" y="94" font-size="20" fill="#5a6270" text-anchor="start">所谓“自动微分引擎”是功能概念：前向的留痕代码 + 反向的 Engine 调度器</text>
+
+<text x="40" y="140" font-size="22" font-weight="600" fill="#EE4C2C" text-anchor="start">前向 · 边算边记（留痕分散在每个算子里，没有中央建图器）</text>
+<rect x="50" y="165" width="360" height="135" rx="14" fill="#FCEDE8" stroke="#EE4C2C" stroke-width="2.2"/>
+<text x="230" y="210" font-size="26" font-weight="600" fill="#8a4a38" text-anchor="middle" dominant-baseline="central">输入 x, w</text>
+<text x="230" y="258" font-size="19" fill="#8a4a38" text-anchor="middle" dominant-baseline="central">requires_grad=True</text>
+<rect x="460" y="165" width="360" height="135" rx="14" fill="#FCEDE8" stroke="#EE4C2C" stroke-width="2.2"/>
+<text x="640" y="200" font-size="25" font-weight="600" fill="#8a4a38" text-anchor="middle" dominant-baseline="central">每个算子的实现</text>
+<text x="640" y="240" font-size="19" fill="#8a4a38" text-anchor="middle" dominant-baseline="central">算出结果，同时顺手留痕</text>
+<text x="640" y="278" font-size="17" fill="#8a4a38" text-anchor="middle" dominant-baseline="central">造节点 / 记依赖 / 存中间值 / 接指针</text>
+<rect x="870" y="165" width="360" height="135" rx="14" fill="#FCEDE8" stroke="#EE4C2C" stroke-width="2.2"/>
+<text x="1050" y="210" font-size="26" font-weight="600" fill="#8a4a38" text-anchor="middle" dominant-baseline="central">输出 y</text>
+<text x="1050" y="258" font-size="19" fill="#8a4a38" text-anchor="middle" dominant-baseline="central">grad_fn 指向刚造的节点</text>
+<path d="M410 232L460 232" stroke="#EE4C2C" stroke-width="2.6" fill="none" marker-end="url(#arrO)"/>
+<path d="M820 232L870 232" stroke="#EE4C2C" stroke-width="2.6" fill="none" marker-end="url(#arrO)"/>
+
+<path d="M640 300L640 425" stroke="#7b5cc4" stroke-width="2.6" fill="none" stroke-dasharray="7 6" marker-end="url(#arrP)"/>
+<text x="664" y="360" font-size="18" fill="#7b5cc4" text-anchor="start" dominant-baseline="central">前向留下的节点与边</text>
+<text x="664" y="388" font-size="18" fill="#7b5cc4" text-anchor="start" dominant-baseline="central">在反向时被读回、被消费</text>
+
+<text x="40" y="410" font-size="22" font-weight="600" fill="#2f6fb0" text-anchor="start">反向 · Engine::execute 登场，把散乱节点当任务图来调度</text>
+<rect x="50" y="435" width="360" height="125" rx="14" fill="#E8F1FA" stroke="#2f6fb0" stroke-width="2.2"/>
+<text x="230" y="478" font-size="25" font-weight="600" fill="#39618c" text-anchor="middle" dominant-baseline="central">loss.backward()</text>
+<text x="230" y="522" font-size="18" fill="#39618c" text-anchor="middle" dominant-baseline="central">从出口 y.grad_fn 进入</text>
+<rect x="460" y="435" width="360" height="125" rx="14" fill="#E8F1FA" stroke="#2f6fb0" stroke-width="2.2"/>
+<text x="640" y="470" font-size="24" font-weight="600" fill="#39618c" text-anchor="middle" dominant-baseline="central">Engine::execute()</text>
+<text x="640" y="506" font-size="17" fill="#39618c" text-anchor="middle" dominant-baseline="central">建 GraphTask · 统计依赖 · ready 队列</text>
+<text x="640" y="538" font-size="17" fill="#39618c" text-anchor="middle" dominant-baseline="central">按拓扑序取节点 → 调 apply()</text>
+<rect x="870" y="435" width="360" height="125" rx="14" fill="#E6F5EE" stroke="#1f9d6b" stroke-width="2.2"/>
+<text x="1050" y="478" font-size="25" font-weight="600" fill="#0F6E56" text-anchor="middle" dominant-baseline="central">叶子 .grad</text>
+<text x="1050" y="522" font-size="18" fill="#0F6E56" text-anchor="middle" dominant-baseline="central">AccumulateGrad 累加填入</text>
+<path d="M410 497L460 497" stroke="#2f6fb0" stroke-width="2.6" fill="none" marker-end="url(#arrB)"/>
+<path d="M820 497L870 497" stroke="#2f6fb0" stroke-width="2.6" fill="none" marker-end="url(#arrB)"/>
+
+<text x="40" y="600" font-size="21" font-weight="600" fill="#1a1d24" text-anchor="start">三个真正的引擎零件：</text>
+<rect x="50" y="620" width="360" height="66" rx="14" fill="#F0EBFA" stroke="#7b5cc4" stroke-width="2.2"/>
+<text x="230" y="653" font-size="19" font-weight="600" fill="#7b5cc4" text-anchor="middle" dominant-baseline="central">Node.apply() = 求导规则本身</text>
+<rect x="460" y="620" width="360" height="66" rx="14" fill="#F0EBFA" stroke="#7b5cc4" stroke-width="2.2"/>
+<text x="640" y="653" font-size="19" font-weight="600" fill="#7b5cc4" text-anchor="middle" dominant-baseline="central">GraphTask = 一次性调度账本</text>
+<rect x="870" y="620" width="360" height="66" rx="14" fill="#F0EBFA" stroke="#7b5cc4" stroke-width="2.2"/>
+<text x="1050" y="653" font-size="19" font-weight="600" fill="#7b5cc4" text-anchor="middle" dominant-baseline="central">依赖计数 + ready 队列 = 执行顺序</text>
+</svg>
+<ul class="points">
+    <li>“引擎”不是一个对象，而是<strong>前向留痕</strong> + <strong>反向调度</strong>两套代码的合称；<code>grad_fn</code> 等属性是账本，引擎是记账与查账的动作。</li>
+    <li>前向阶段没有中央建图器：留痕逻辑<strong>分散在每个算子的实现里</strong>，这就是“动态图、隐式建图”的含义。</li>
+    <li>反向阶段 <code>Engine::execute()</code> 才真正登场：建一次性 <code>GraphTask</code>，靠依赖计数 + ready 队列按拓扑序逐节点调用 <code>apply()</code>。</li>
+    <li>三个零件：<strong>Node.apply() 是求导公式</strong>（即代码）、<strong>GraphTask 是一次性账本</strong>、<strong>依赖计数与队列决定顺序</strong>——三者缺一不可。</li>
+</ul>
+</div>
+</div>
+</body>
+</html>

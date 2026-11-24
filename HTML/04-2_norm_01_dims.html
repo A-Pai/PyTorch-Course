@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+:root{--ink:#1a1d24;--sub:#5a6270;--line:#e2e6ec;--bg:#f5f6f8;--card:#fff;
+--orange:#EE4C2C;--orange-bg:#FCEDE8;--blue:#2f6fb0;--blue-bg:#E8F1FA;
+--green:#1f9d6b;--green-bg:#E6F5EE;--red:#d23f3f;--red-bg:#FBEaea;
+--purple:#7b5cc4;--purple-bg:#F0EBFA;--amber:#b8860b;--amber-bg:#FBF3DE;}
+*{box-sizing:border-box;}
+html,body{height:100%;}
+body{margin:0;background:var(--bg);color:var(--ink);
+ font-family:'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif;line-height:1.5;overflow:auto;}
+.wrap{height:100vh;max-width:1320px;margin:0 auto;padding:10px 24px 10px;
+ display:flex;flex-direction:column;}
+h1{flex:none;margin:0 0 2px;font-size:20px;line-height:1.4;padding-left:14px;border-left:5px solid var(--orange);}
+.src{flex:none;color:var(--sub);font-size:13px;line-height:1.5;margin:0 0 8px;}
+.figure{flex:1;min-height:0;display:flex;flex-direction:column;
+ background:var(--card);border:1px solid var(--line);border-radius:14px;
+ padding:10px 18px 10px;}
+svg{flex:1 1 0;min-height:0;display:block;width:100%;height:0;max-width:100%;
+ margin:0 auto;background:#fff;border:1px solid var(--line);border-radius:10px;}
+.points{flex:none;margin:8px 0 0;padding:0;list-style:none;}
+.points li{position:relative;padding:2px 0 2px 24px;font-size:13px;line-height:1.45;color:#333a45;}
+.points li:before{content:"";position:absolute;left:4px;top:9px;width:8px;height:8px;
+ border-radius:50%;background:var(--orange);}
+text{font-family:'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif;}
+</style>
+</head>
+<body>
+<div class="wrap">
+<h1>三种归一化：沿哪个维度求统计</h1>
+<p class="src">对应教程：一 BatchNorm / 二 LayerNorm / 三 InstanceNorm —— 统计维度对比</p>
+<div class="figure">
+<svg viewBox="20.0 7.3 1220.0 597.7" role="img" aria-label="三种归一化：沿哪个维度求统计">
+<defs>
+<marker id="arrO" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#EE4C2C" stroke-width="1.8"/></marker>
+<marker id="arrB" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#2f6fb0" stroke-width="1.8"/></marker>
+<marker id="arrG" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#1f9d6b" stroke-width="1.8"/></marker>
+<marker id="arrP" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#7b5cc4" stroke-width="1.8"/></marker>
+<marker id="arrA" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#b8860b" stroke-width="1.8"/></marker>
+</defs>
+<text x="40" y="46" font-size="28" font-weight="700" fill="#1a1d24" text-anchor="start" dominant-baseline="central">三种归一化：到底沿哪个维度求统计？</text>
+<text x="40" y="86" font-size="17" font-weight="400" fill="#5a6270" text-anchor="start" dominant-baseline="central">同样一批图像 [B, C, H, W]，三种归一化覆盖的格子范围完全不同</text>
+<text x="40" y="116" font-size="15" font-weight="400" fill="#5a6270" text-anchor="start" dominant-baseline="central">网格：行＝Batch 样本 B，列＝通道 C，每个小格＝一张 H×W 特征图；高亮＝同一次统计覆盖的范围</text>
+<rect x="40" y="145" width="380" height="440" rx="14" fill="#FCEDE8" stroke="#EE4C2C" stroke-width="2.2"/>
+<text x="230" y="178" font-size="22" font-weight="700" fill="#8a4a38" text-anchor="middle" dominant-baseline="central">BatchNorm</text>
+<rect x="133" y="210" width="58" height="48" rx="6" fill="#eef1f5" stroke="#d7dce4" stroke-width="1.2"/>
+<rect x="201" y="210" width="58" height="48" rx="6" fill="#FCEDE8" stroke="#EE4C2C" stroke-width="2.4"/>
+<rect x="269" y="210" width="58" height="48" rx="6" fill="#eef1f5" stroke="#d7dce4" stroke-width="1.2"/>
+<rect x="133" y="267" width="58" height="48" rx="6" fill="#eef1f5" stroke="#d7dce4" stroke-width="1.2"/>
+<rect x="201" y="267" width="58" height="48" rx="6" fill="#FCEDE8" stroke="#EE4C2C" stroke-width="2.4"/>
+<rect x="269" y="267" width="58" height="48" rx="6" fill="#eef1f5" stroke="#d7dce4" stroke-width="1.2"/>
+<rect x="133" y="324" width="58" height="48" rx="6" fill="#eef1f5" stroke="#d7dce4" stroke-width="1.2"/>
+<rect x="201" y="324" width="58" height="48" rx="6" fill="#FCEDE8" stroke="#EE4C2C" stroke-width="2.4"/>
+<rect x="269" y="324" width="58" height="48" rx="6" fill="#eef1f5" stroke="#d7dce4" stroke-width="1.2"/>
+<rect x="133" y="381" width="58" height="48" rx="6" fill="#eef1f5" stroke="#d7dce4" stroke-width="1.2"/>
+<rect x="201" y="381" width="58" height="48" rx="6" fill="#FCEDE8" stroke="#EE4C2C" stroke-width="2.4"/>
+<rect x="269" y="381" width="58" height="48" rx="6" fill="#eef1f5" stroke="#d7dce4" stroke-width="1.2"/>
+<text x="230" y="452" font-size="17" font-weight="700" fill="#8a4a38" text-anchor="middle" dominant-baseline="central">跨 B，按通道统计</text>
+<text x="230" y="485" font-size="14" font-weight="400" fill="#333" text-anchor="middle" dominant-baseline="central">同一通道 C：跨全部 B 的 H×W</text>
+<text x="230" y="512" font-size="14" font-weight="400" fill="#333" text-anchor="middle" dominant-baseline="central">求 μ、σ（橙色整列）</text>
+<text x="230" y="539" font-size="14" font-weight="400" fill="#5a6270" text-anchor="middle" dominant-baseline="central">依赖 Batch · 有 running 缓存</text>
+<text x="230" y="566" font-size="14" font-weight="400" fill="#5a6270" text-anchor="middle" dominant-baseline="central">适用：CNN 大 batch 分类</text>
+<rect x="440" y="145" width="380" height="440" rx="14" fill="#E8F1FA" stroke="#2f6fb0" stroke-width="2.2"/>
+<text x="630" y="178" font-size="22" font-weight="700" fill="#39618c" text-anchor="middle" dominant-baseline="central">LayerNorm</text>
+<rect x="533" y="210" width="58" height="48" rx="6" fill="#eef1f5" stroke="#d7dce4" stroke-width="1.2"/>
+<rect x="601" y="210" width="58" height="48" rx="6" fill="#eef1f5" stroke="#d7dce4" stroke-width="1.2"/>
+<rect x="669" y="210" width="58" height="48" rx="6" fill="#eef1f5" stroke="#d7dce4" stroke-width="1.2"/>
+<rect x="533" y="267" width="58" height="48" rx="6" fill="#E8F1FA" stroke="#2f6fb0" stroke-width="2.4"/>
+<rect x="601" y="267" width="58" height="48" rx="6" fill="#E8F1FA" stroke="#2f6fb0" stroke-width="2.4"/>
+<rect x="669" y="267" width="58" height="48" rx="6" fill="#E8F1FA" stroke="#2f6fb0" stroke-width="2.4"/>
+<rect x="533" y="324" width="58" height="48" rx="6" fill="#eef1f5" stroke="#d7dce4" stroke-width="1.2"/>
+<rect x="601" y="324" width="58" height="48" rx="6" fill="#eef1f5" stroke="#d7dce4" stroke-width="1.2"/>
+<rect x="669" y="324" width="58" height="48" rx="6" fill="#eef1f5" stroke="#d7dce4" stroke-width="1.2"/>
+<rect x="533" y="381" width="58" height="48" rx="6" fill="#eef1f5" stroke="#d7dce4" stroke-width="1.2"/>
+<rect x="601" y="381" width="58" height="48" rx="6" fill="#eef1f5" stroke="#d7dce4" stroke-width="1.2"/>
+<rect x="669" y="381" width="58" height="48" rx="6" fill="#eef1f5" stroke="#d7dce4" stroke-width="1.2"/>
+<text x="630" y="452" font-size="17" font-weight="700" fill="#39618c" text-anchor="middle" dominant-baseline="central">单样本内跨维度统计</text>
+<text x="630" y="485" font-size="14" font-weight="400" fill="#333" text-anchor="middle" dominant-baseline="central">单样本 b：跨全部 C 及其 H×W</text>
+<text x="630" y="512" font-size="14" font-weight="400" fill="#333" text-anchor="middle" dominant-baseline="central">求 μ、σ（蓝色整行）</text>
+<text x="630" y="539" font-size="14" font-weight="400" fill="#5a6270" text-anchor="middle" dominant-baseline="central">不依赖 Batch · 无缓存</text>
+<text x="630" y="566" font-size="14" font-weight="400" fill="#5a6270" text-anchor="middle" dominant-baseline="central">适用：Transformer / NLP</text>
+<rect x="840" y="145" width="380" height="440" rx="14" fill="#E6F5EE" stroke="#1f9d6b" stroke-width="2.2"/>
+<text x="1030" y="178" font-size="22" font-weight="700" fill="#0F6E56" text-anchor="middle" dominant-baseline="central">InstanceNorm</text>
+<rect x="933" y="210" width="58" height="48" rx="6" fill="#eef1f5" stroke="#d7dce4" stroke-width="1.2"/>
+<rect x="1001" y="210" width="58" height="48" rx="6" fill="#eef1f5" stroke="#d7dce4" stroke-width="1.2"/>
+<rect x="1069" y="210" width="58" height="48" rx="6" fill="#eef1f5" stroke="#d7dce4" stroke-width="1.2"/>
+<rect x="933" y="267" width="58" height="48" rx="6" fill="#eef1f5" stroke="#d7dce4" stroke-width="1.2"/>
+<rect x="1001" y="267" width="58" height="48" rx="6" fill="#E6F5EE" stroke="#1f9d6b" stroke-width="2.4"/>
+<rect x="1069" y="267" width="58" height="48" rx="6" fill="#eef1f5" stroke="#d7dce4" stroke-width="1.2"/>
+<rect x="933" y="324" width="58" height="48" rx="6" fill="#eef1f5" stroke="#d7dce4" stroke-width="1.2"/>
+<rect x="1001" y="324" width="58" height="48" rx="6" fill="#eef1f5" stroke="#d7dce4" stroke-width="1.2"/>
+<rect x="1069" y="324" width="58" height="48" rx="6" fill="#eef1f5" stroke="#d7dce4" stroke-width="1.2"/>
+<rect x="933" y="381" width="58" height="48" rx="6" fill="#eef1f5" stroke="#d7dce4" stroke-width="1.2"/>
+<rect x="1001" y="381" width="58" height="48" rx="6" fill="#eef1f5" stroke="#d7dce4" stroke-width="1.2"/>
+<rect x="1069" y="381" width="58" height="48" rx="6" fill="#eef1f5" stroke="#d7dce4" stroke-width="1.2"/>
+<text x="1030" y="452" font-size="17" font-weight="700" fill="#0F6E56" text-anchor="middle" dominant-baseline="central">单样本单通道统计</text>
+<text x="1030" y="485" font-size="14" font-weight="400" fill="#333" text-anchor="middle" dominant-baseline="central">单样本 b 的单通道 c：仅该格</text>
+<text x="1030" y="512" font-size="14" font-weight="400" fill="#333" text-anchor="middle" dominant-baseline="central">H×W 求 μ、σ（绿色单格）</text>
+<text x="1030" y="539" font-size="14" font-weight="400" fill="#5a6270" text-anchor="middle" dominant-baseline="central">不依赖 Batch · 仅 γ 无 β</text>
+<text x="1030" y="566" font-size="14" font-weight="400" fill="#5a6270" text-anchor="middle" dominant-baseline="central">适用：风格迁移 / GAN</text>
+</svg>
+<ul class="points">
+    <li><strong>BatchNorm</strong> 沿 Batch 维、按通道统计，依赖 batch 大小，训练时维护 running_mean/var 缓存。</li>
+    <li><strong>LayerNorm</strong> 对单条样本的全部特征维统计，不依赖 batch，是 Transformer / NLP 的主流。</li>
+    <li><strong>InstanceNorm</strong> 对单样本单通道的空间像素统计，剥离明暗信息，用于风格迁移与 GAN。</li>
+</ul>
+</div>
+</div>
+</body>
+</html>

@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>计算图的生命周期</title>
+<style>
+:root{--ink:#1a1d24;--sub:#5a6270;--line:#e2e6ec;--bg:#f5f6f8;--card:#fff;
+--orange:#EE4C2C;--orange-bg:#FCEDE8;--blue:#2f6fb0;--blue-bg:#E8F1FA;
+--green:#1f9d6b;--green-bg:#E6F5EE;--red:#d23f3f;--red-bg:#FBEaea;
+--purple:#7b5cc4;--purple-bg:#F0EBFA;--amber:#b8860b;--amber-bg:#FBF3DE;}
+*{box-sizing:border-box;}
+html,body{height:100%;}
+body{margin:0;background:var(--bg);color:var(--ink);
+ font-family:'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif;line-height:1.5;overflow:auto;}
+.wrap{height:100vh;max-width:1320px;margin:0 auto;padding:10px 24px 10px;
+ display:flex;flex-direction:column;}
+h1{flex:none;margin:0 0 2px;font-size:20px;line-height:1.4;padding-left:14px;border-left:5px solid var(--orange);}
+.src{flex:none;color:var(--sub);font-size:13px;line-height:1.5;margin:0 0 8px;}
+.figure{flex:1;min-height:0;display:flex;flex-direction:column;
+ background:var(--card);border:1px solid var(--line);border-radius:14px;
+ padding:10px 18px 10px;}
+svg{flex:1 1 0;min-height:0;display:block;width:100%;height:0;max-width:100%;
+ margin:0 auto;background:#fff;border:1px solid var(--line);border-radius:10px;}
+.points{flex:none;margin:8px 0 0;padding:0;list-style:none;}
+.points li{position:relative;padding:2px 0 2px 24px;font-size:13px;line-height:1.45;color:#333a45;}
+.points li:before{content:"";position:absolute;left:4px;top:9px;width:8px;height:8px;
+ border-radius:50%;background:var(--orange);}
+.tag{display:inline-block;font-size:12px;padding:1px 9px;border-radius:6px;margin:0 3px;}
+.t-blue{background:var(--blue-bg);color:var(--blue);}
+.t-orange{background:var(--orange-bg);color:var(--orange);}
+.t-green{background:var(--green-bg);color:var(--green);}
+.t-red{background:var(--red-bg);color:var(--red);}
+.t-purple{background:var(--purple-bg);color:var(--purple);}
+text{font-family:'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif;}
+</style>
+</head>
+<body>
+<div class="wrap">
+<h1>计算图的生命周期</h1>
+<p class="src">对应教程：四、遍历机制 / 4.9 生命周期  +  4.10 训练/推理策略</p>
+<div class="figure">
+<svg viewBox="20.0 -0.7 1230.0 716.7" role="img" aria-label="计算图的生命周期">
+<defs>
+<marker id="arrB" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#2f6fb0" stroke-width="1.8"/></marker>
+<marker id="arrO" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#EE4C2C" stroke-width="1.8"/></marker>
+<marker id="arrG" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#1f9d6b" stroke-width="1.8"/></marker>
+<marker id="arrP" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#7b5cc4" stroke-width="1.8"/></marker>
+</defs>
+<text x="40" y="52" font-size="30" font-weight="600" fill="#1a1d24" text-anchor="start">计算图的生命周期：构图 → 反向 → 销毁</text>
+<text x="40" y="92" font-size="22" fill="#5a6270" text-anchor="start">一次 backward 后计算图默认销毁——这是“动态图”的含义</text>
+<text x="230" y="128" font-size="21" font-weight="600" fill="#EE4C2C" text-anchor="middle" dominant-baseline="central">构图（前向）</text>
+<rect x="50.0" y="155" width="360" height="190" rx="14" fill="#FCEDE8" stroke="#EE4C2C" stroke-width="2.2"/>
+<text x="230" y="192.0" font-size="21" fill="#8a4a38" text-anchor="middle" dominant-baseline="central">创建反向节点</text>
+<text x="230" y="250.0" font-size="21" fill="#8a4a38" text-anchor="middle" dominant-baseline="central">保存前向中间值</text>
+<text x="230" y="308.0" font-size="21" fill="#8a4a38" text-anchor="middle" dominant-baseline="central">绑定 next_functions</text>
+<text x="640" y="128" font-size="21" font-weight="600" fill="#2f6fb0" text-anchor="middle" dominant-baseline="central">反向（backward）</text>
+<rect x="460.0" y="155" width="360" height="190" rx="14" fill="#E8F1FA" stroke="#2f6fb0" stroke-width="2.2"/>
+<text x="640" y="192.0" font-size="21" fill="#39618c" text-anchor="middle" dominant-baseline="central">从 y.grad_fn 进入</text>
+<text x="640" y="250.0" font-size="21" fill="#39618c" text-anchor="middle" dominant-baseline="central">DFS 遍历整张 DAG</text>
+<text x="640" y="308.0" font-size="21" fill="#39618c" text-anchor="middle" dominant-baseline="central">局部梯度链式相乘</text>
+<text x="1050" y="128" font-size="21" font-weight="600" fill="#1f9d6b" text-anchor="middle" dominant-baseline="central">销毁（默认）</text>
+<rect x="870.0" y="155" width="360" height="190" rx="14" fill="#E6F5EE" stroke="#1f9d6b" stroke-width="2.2"/>
+<text x="1050" y="192.0" font-size="21" fill="#0F6E56" text-anchor="middle" dominant-baseline="central">多分支梯度累加</text>
+<text x="1050" y="250.0" font-size="21" fill="#0F6E56" text-anchor="middle" dominant-baseline="central">写入各叶子 .grad</text>
+<text x="1050" y="308.0" font-size="21" fill="#0F6E56" text-anchor="middle" dominant-baseline="central">释放图与中间值</text>
+<path d="M410 270L460 270" stroke="#7b5cc4" stroke-width="2.6" fill="none" marker-end="url(#arrP)"/>
+<path d="M820 270L870 270" stroke="#7b5cc4" stroke-width="2.6" fill="none" marker-end="url(#arrP)"/>
+<text x="40" y="415" font-size="23" font-weight="600" fill="#EE4C2C" text-anchor="start" dominant-baseline="central">为何用完即焚？</text>
+<rect x="50.0" y="450" width="360" height="128" rx="14" fill="#FCEDE8" stroke="#EE4C2C" stroke-width="2.2"/>
+<text x="230" y="476.6666666666667" font-size="21" font-weight="600" fill="#8a4a38" text-anchor="middle" dominant-baseline="central">释放显存</text>
+<text x="230" y="514.0" font-size="17" fill="#8a4a38" text-anchor="middle" dominant-baseline="central">反向节点持有中间值</text>
+<text x="230" y="551.3333333333333" font-size="17" fill="#8a4a38" text-anchor="middle" dominant-baseline="central">不释放 → 显存爆炸</text>
+<rect x="460.0" y="450" width="360" height="128" rx="14" fill="#E8F1FA" stroke="#2f6fb0" stroke-width="2.2"/>
+<text x="640" y="476.6666666666667" font-size="21" font-weight="600" fill="#39618c" text-anchor="middle" dominant-baseline="central">防止累积</text>
+<text x="640" y="514.0" font-size="17" fill="#39618c" text-anchor="middle" dominant-baseline="central">每步都构建新图</text>
+<text x="640" y="551.3333333333333" font-size="17" fill="#39618c" text-anchor="middle" dominant-baseline="central">旧图不销毁 → 持续累积</text>
+<rect x="870.0" y="450" width="360" height="128" rx="14" fill="#E6F5EE" stroke="#1f9d6b" stroke-width="2.2"/>
+<text x="1050" y="476.6666666666667" font-size="21" font-weight="600" fill="#0F6E56" text-anchor="middle" dominant-baseline="central">稳定性能</text>
+<text x="1050" y="514.0" font-size="17" fill="#0F6E56" text-anchor="middle" dominant-baseline="central">显存稳定</text>
+<text x="1050" y="551.3333333333333" font-size="17" fill="#0F6E56" text-anchor="middle" dominant-baseline="central">支撑持续训练</text>
+<rect x="80.0" y="630" width="1120" height="66" rx="14" fill="#F0EBFA" stroke="#7b5cc4" stroke-width="2.2"/>
+<text x="640" y="663.0" font-size="21" font-weight="600" fill="#7b5cc4" text-anchor="middle" dominant-baseline="central">需多次 backward 时：y.backward(retain_graph=True) 保留图；用完仍需释放</text>
+</svg>
+<ul class="points">
+    <li>计算图是<strong>一次性用品</strong>：前向构建 → 反向使用 → 反向后默认销毁。</li>
+    <li>用完即焚是为了<strong>释放显存</strong>、防止每个 batch 累积导致 OOM。</li>
+    <li>需多次反向时用 <code>y.backward(retain_graph=True)</code> 保留图，用后仍需释放。</li>
+</ul>
+</div>
+</div>
+</body>
+</html>

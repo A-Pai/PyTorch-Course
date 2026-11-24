@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+:root{--ink:#1a1d24;--sub:#5a6270;--line:#e2e6ec;--bg:#f5f6f8;--card:#fff;
+--orange:#EE4C2C;--orange-bg:#FCEDE8;--blue:#2f6fb0;--blue-bg:#E8F1FA;
+--green:#1f9d6b;--green-bg:#E6F5EE;--red:#d23f3f;--red-bg:#FBEaea;
+--purple:#7b5cc4;--purple-bg:#F0EBFA;--amber:#b8860b;--amber-bg:#FBF3DE;}
+*{box-sizing:border-box;}
+html,body{height:100%;}
+body{margin:0;background:var(--bg);color:var(--ink);
+ font-family:'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif;line-height:1.5;overflow:auto;}
+.wrap{height:100vh;max-width:1320px;margin:0 auto;padding:10px 24px 10px;
+ display:flex;flex-direction:column;}
+h1{flex:none;margin:0 0 2px;font-size:20px;line-height:1.4;padding-left:14px;border-left:5px solid var(--orange);}
+.src{flex:none;color:var(--sub);font-size:13px;line-height:1.5;margin:0 0 8px;}
+.figure{flex:1;min-height:0;display:flex;flex-direction:column;
+ background:var(--card);border:1px solid var(--line);border-radius:14px;
+ padding:10px 18px 10px;}
+svg{flex:1 1 0;min-height:0;display:block;width:100%;height:0;max-width:100%;
+ margin:0 auto;background:#fff;border:1px solid var(--line);border-radius:10px;}
+.points{flex:none;margin:8px 0 0;padding:0;list-style:none;}
+.points li{position:relative;padding:2px 0 2px 24px;font-size:13px;line-height:1.45;color:#333a45;}
+.points li:before{content:"";position:absolute;left:4px;top:9px;width:8px;height:8px;
+ border-radius:50%;background:var(--orange);}
+text{font-family:'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif;}
+</style>
+</head>
+<body>
+<div class="wrap">
+<h1>CrossEntropy 与 BCE 对照</h1>
+<p class="src">对应教程：专题讲解 BCE + 理论专题：为什么不能随意互换 BCE / CE</p>
+<div class="figure">
+<svg viewBox="20.0 7.9 1240.0 652.1" role="img" aria-label="CrossEntropy 与 BCE 对照">
+<defs>
+<marker id="arrO" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#EE4C2C" stroke-width="1.8"/></marker>
+<marker id="arrB" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#2f6fb0" stroke-width="1.8"/></marker>
+<marker id="arrG" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#1f9d6b" stroke-width="1.8"/></marker>
+<marker id="arrP" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#7b5cc4" stroke-width="1.8"/></marker>
+<marker id="arrA" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#b8860b" stroke-width="1.8"/></marker>
+</defs>
+<text x="40" y="46" font-size="27" font-weight="700" fill="#1a1d24" text-anchor="start" dominant-baseline="central">CrossEntropy 与 BCE：两套完全不同的概率模型</text>
+<text x="40" y="86" font-size="17" font-weight="400" fill="#5a6270" text-anchor="start" dominant-baseline="central">互斥多分类用一套 Softmax 分布；二元/多标签用多条独立 Sigmoid 分布</text>
+<rect x="40" y="125" width="580" height="440" rx="14" fill="#FCEDE8" stroke="#EE4C2C" stroke-width="2.2"/>
+<text x="330" y="158" font-size="22" font-weight="700" fill="#8a4a38" text-anchor="middle" dominant-baseline="central">CrossEntropyLoss</text>
+<text x="330" y="190" font-size="15" font-weight="400" fill="#8a4a38" text-anchor="middle" dominant-baseline="central">单标签互斥分类</text>
+<path d="M70 210 L590 210" stroke="#e0b9ae" stroke-width="1.5" fill="none"/>
+<text x="70" y="240" font-size="16" font-weight="700" fill="#8a4a38" text-anchor="start" dominant-baseline="central">概率模型</text>
+<text x="70" y="268" font-size="14" font-weight="400" fill="#333" text-anchor="start" dominant-baseline="central">一套 Softmax 多项分布，概率和=1、互斥</text>
+<text x="70" y="306" font-size="16" font-weight="700" fill="#8a4a38" text-anchor="start" dominant-baseline="central">输入 shape</text>
+<text x="70" y="334" font-size="14" font-weight="400" fill="#333" text-anchor="start" dominant-baseline="central">[batch, num_class] + 类别索引标签</text>
+<text x="70" y="372" font-size="16" font-weight="700" fill="#8a4a38" text-anchor="start" dominant-baseline="central">损失结构</text>
+<text x="70" y="400" font-size="14" font-weight="400" fill="#333" text-anchor="start" dominant-baseline="central">每样本只取真实类 1 项：-log(p_y)</text>
+<text x="70" y="438" font-size="16" font-weight="700" fill="#8a4a38" text-anchor="start" dominant-baseline="central">适用场景</text>
+<text x="70" y="466" font-size="14" font-weight="400" fill="#333" text-anchor="start" dominant-baseline="central">单标签互斥多分类</text>
+<text x="70" y="512" font-size="13" font-weight="400" fill="#5a6270" text-anchor="start" dominant-baseline="central">内部含 LogSoftmax，输入直接给 logits</text>
+<rect x="660" y="125" width="580" height="440" rx="14" fill="#E8F1FA" stroke="#2f6fb0" stroke-width="2.2"/>
+<text x="950" y="158" font-size="22" font-weight="700" fill="#39618c" text-anchor="middle" dominant-baseline="central">BCEWithLogitsLoss</text>
+<text x="950" y="190" font-size="15" font-weight="400" fill="#39618c" text-anchor="middle" dominant-baseline="central">二元与多标签分类</text>
+<path d="M690 210 L1210 210" stroke="#b9cfe4" stroke-width="1.5" fill="none"/>
+<text x="690" y="240" font-size="16" font-weight="700" fill="#39618c" text-anchor="start" dominant-baseline="central">概率模型</text>
+<text x="690" y="268" font-size="14" font-weight="400" fill="#333" text-anchor="start" dominant-baseline="central">多条独立 Sigmoid 分布，无概率和约束</text>
+<text x="690" y="306" font-size="16" font-weight="700" fill="#39618c" text-anchor="start" dominant-baseline="central">输入 shape</text>
+<text x="690" y="334" font-size="14" font-weight="400" fill="#333" text-anchor="start" dominant-baseline="central">[batch, C]，标签 0/1（可多标签）</text>
+<text x="690" y="372" font-size="16" font-weight="700" fill="#39618c" text-anchor="start" dominant-baseline="central">损失结构</text>
+<text x="690" y="400" font-size="14" font-weight="400" fill="#333" text-anchor="start" dominant-baseline="central">每通道 2 项：-[y·log p+(1-y)·log(1-p)]</text>
+<text x="690" y="438" font-size="16" font-weight="700" fill="#39618c" text-anchor="start" dominant-baseline="central">适用场景</text>
+<text x="690" y="466" font-size="14" font-weight="400" fill="#333" text-anchor="start" dominant-baseline="central">二分类 / 多标签 / 像素级判断</text>
+<text x="690" y="512" font-size="13" font-weight="400" fill="#5a6270" text-anchor="start" dominant-baseline="central">WithLogits 版内含 Sigmoid，数值更稳定</text>
+<rect x="40" y="585" width="1200" height="55" rx="14" fill="#FBEaea" stroke="#d23f3f" stroke-width="1.8"/>
+<text x="640" y="613" font-size="15" font-weight="600" fill="#d23f3f" text-anchor="middle" dominant-baseline="central">注意：仅单标签二分类时二者数值巧合相等；分布假设、损失结构、梯度与任务定义域完全不同，网络输出不能随意互换。</text>
+</svg>
+<ul class="points">
+    <li><strong>CE 对应一套互斥多项分布</strong>（Softmax），每个样本只取真实类一项，用于单标签分类。</li>
+    <li><strong>BCE 对应多条独立伯努利分布</strong>（Sigmoid），每条通道正负两项都算，支持二分类与多标签。</li>
+    <li>二者输入 shape 与标签语义不同；仅单标签二分类时数值巧合相等，工程中不能互换网络输出。</li>
+</ul>
+</div>
+</div>
+</body>
+</html>
